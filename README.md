@@ -10,7 +10,7 @@ CathayBK UED — AI 工作坊學員作業繳交區（試跑場 + 正式場）。
 
 ```
 AI-Workshop-Homework/
-├── 試跑場/
+├── 試教場/
 │   └── 中文+英文名字/                # 例：王小明 Ming
 │       └── xxxx.html
 └── 正式場/
