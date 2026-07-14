@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(git init *)",
-      "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '初始化作業繳交區與 README *)"
+      "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '初始化作業繳交區與 README *)",
+      "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '更新繳交規則：html 格式、正式場子資料夾與命名規則 *)"
     ]
   }
 }
