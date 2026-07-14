@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init *)",
+      "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '初始化作業繳交區與 README *)"
+    ]
+  }
+}
