@@ -11,14 +11,14 @@ CathayBK UED — AI 工作坊學員作業繳交區（試跑場 + 正式場）。
 ```
 AI-Workshop-Homework/
 ├── 試跑場/
-│   └── 中文+英文名字/                # 例：王小明Ming
+│   └── 中文+英文名字/                # 例：王小明 Ming
 │       └── xxxx.html
 └── 正式場/
     ├── 個人日週報 Agent/
-    │   └── 中文+英文名字/            # 例：王小明Ming
+    │   └── 中文+英文名字/            # 例：王小明 Ming
     │       └── 0714_weekly_report_Ming.html
     └── 自定義 Agent/
-        └── 中文+英文名字/            # 例：王小明Ming
+        └── 中文+英文名字/            # 例：王小明 Ming
             └── 0714_MyAgent_Ming.html
 ```
 
@@ -55,14 +55,14 @@ AI-Workshop-Homework/
 
 ## 三、如何上傳
 
-### 方式 A：GitHub 網頁上傳（已被加為協作者者）
+### 方式 A：GitHub 網頁上傳（已被加為協作者）
 
 1. 進入對應資料夾。
 2. 點右上角 **Add file → Upload files**（可直接拖曳資料夾建立子資料夾）。
 3. 拖曳你的 `.html` 作業檔案進去。
 4. 下方 **Commit changes** 直接送出。
 
-> 建立子資料夾小技巧：**Add file → Create new file**，檔名輸入 `王小明Ming/0714_weekly_report_Ming.html` 即可自動建立資料夾。
+> 建立子資料夾小技巧：**Add file → Create new file**，檔名輸入 `王小明 Ming/0714_weekly_report_Ming.html` 即可自動建立資料夾。
 
 ### 方式 B：Fork + Pull Request（一般學員，推薦）
 
@@ -79,7 +79,7 @@ AI-Workshop-Homework/
 
 - [ ] 作業為 `.html` 格式
 - [ ] 放在正確資料夾（試跑場 / 正式場 → 個人日週報 Agent 或 自定義 Agent）
-- [ ] 已用「中文+英文名字」建立自己的子資料夾
+- [ ] 已用「中文 + 英文名字」建立自己的子資料夾
 - [ ] 檔名符合命名格式
 - [ ] 已成功 commit / 送出 PR
 
