@@ -10,13 +10,12 @@ AI 工作坊學員作業繳交區。
 
 ```
 AI-Workshop-Homework/
-└── 正式場/
-    ├── 個人日週報 Agent/
-    │   └── 中文+英文名字/            # 例：王小明 Ming
-    │       └── 0714_weekly_report_Ming.html
-    └── 自定義 Agent/
-        └── 中文+英文名字/            # 例：王小明 Ming
-            └── 0714_MyAgent_Ming.html
+├── 個人日週報 Agent/
+│   └── 中文+英文名字/            # 例：王小明 Ming
+│       └── 0714_weekly_report_Ming.html
+└── 自定義 Agent/
+    └── 中文+英文名字/            # 例：王小明 Ming
+        └── 0714_MyAgent_Ming.html
 ```
 
 - 請放到對應的子資料夾：**個人日週報 Agent** 或 **自定義 Agent**。

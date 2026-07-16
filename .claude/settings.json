@@ -5,7 +5,9 @@
       "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '初始化作業繳交區與 README *)",
       "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '更新繳交規則：html 格式、正式場子資料夾與命名規則 *)",
       "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '移除試教場繳交區與相關說明 *)",
-      "Bash(GIT_EDITOR=true git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com rebase --continue)"
+      "Bash(GIT_EDITOR=true git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com rebase --continue)",
+      "Bash(git mv *)",
+      "Bash(git -c user.name=wenatwork -c user.email=cathaybkued@gmail.com commit -qm '移除正式場外層資料夾，作業區改為兩個根目錄分類 *)"
     ]
   }
 }
