@@ -1,6 +1,9 @@
 # AI 工具設定
 .claude/
 
+# 依賴套件（dist/build 刻意不忽略，避免誤殺放在裡面的作業 HTML）
+node_modules/
+
 # macOS
 .DS_Store
 ._*
