@@ -12,10 +12,10 @@ AI 工作坊學員作業繳交區。
 AI-Workshop-Homework/
 ├── 個人日週報 Agent/
 │   └── 中文+英文名字/            # 例：王小明 Ming
-│       └── 0714_weekly_report_Ming.html
+│       └── 0729_weekly_report_Ming.html
 └── 自定義 Agent/
     └── 中文+英文名字/            # 例：王小明 Ming
-        └── 0714_MyAgent_Ming.html
+        └── 0729_MyAgent_Ming.html
 ```
 
 - 請放到對應的子資料夾：**個人日週報 Agent** 或 **自定義 Agent**。
@@ -25,7 +25,7 @@ AI-Workshop-Homework/
 
 ## 二、檔案命名格式
 
-副檔名一律 `.html`。四碼日期為 `MMDD`（例：7 月 14 日 = `0714`）。
+副檔名一律 `.html`。四碼日期為 `MMDD`（例：7 月 29 日 = `0729`）。
 
 ### 個人日週報 Agent
 
@@ -33,7 +33,7 @@ AI-Workshop-Homework/
 四碼日期_weekly_report_英文名字.html
 ```
 
-範例：`0714_weekly_report_Ming.html`
+範例：`0729_weekly_report_Ming.html`
 
 ### 自定義 Agent
 
@@ -41,7 +41,7 @@ AI-Workshop-Homework/
 四碼日期_自己agent名字_英文名字.html
 ```
 
-範例：`0714_MyAgent_Ming.html`
+範例：`0729_MyAgent_Ming.html`
 
 規則：
 - 欄位之間一律用底線 `_` 分隔，欄位內不要有空格。
@@ -58,7 +58,7 @@ AI-Workshop-Homework/
 3. 拖曳你的 `.html` 作業檔案進去。
 4. 下方 **Commit changes** 直接送出。
 
-> 建立子資料夾小技巧：**Add file → Create new file**，檔名輸入 `王小明 Ming/0714_weekly_report_Ming.html` 即可自動建立資料夾。
+> 建立子資料夾小技巧：**Add file → Create new file**，檔名輸入 `王小明 Ming/0729_weekly_report_Ming.html` 即可自動建立資料夾。
 
 ### 方式 B：Fork + Pull Request（一般學員，推薦）
 
