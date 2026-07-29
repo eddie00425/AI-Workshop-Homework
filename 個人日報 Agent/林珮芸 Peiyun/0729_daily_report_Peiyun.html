@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-07-29 每日進度報告</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --text: #202124;
+  --muted: #687076;
+  --line: #d9d5cb;
+  --accent: #1e6f5c;
+  --accent-soft: #e6f2ed;
+  --warn: #9a5b00;
+  --warn-soft: #fff3dc;
+  --radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+  line-height: 1.65;
+}
+
+.page {
+  width: min(980px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 40px 0 56px;
+}
+
+header {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 5vw, 42px);
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.summary {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  margin: 24px 0;
+  padding: 16px 18px;
+  font-size: 18px;
+}
+
+section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin: 16px 0;
+  padding: 18px 20px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+li + li {
+  margin-top: 10px;
+}
+
+.source {
+  color: var(--muted);
+  display: block;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.empty {
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-radius: 6px;
+  display: inline-block;
+  padding: 2px 8px;
+}
+
+footer {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 24px;
+}
+
+@media (max-width: 640px) {
+  .page {
+    width: min(100% - 24px, 980px);
+    padding-top: 24px;
+  }
+
+  section {
+    padding: 16px;
+  }
+}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1>2026-07-29 每日進度報告</h1>
+      <div class="meta">產生時間：2026-07-29 14:24 Asia/Taipei</div>
+    </header>
+
+    <div class="summary">一句話總結：今天完成每日工作日誌工具的本地產生流程與 Notion 連線驗證，Slack 端則確認目前卡在 OAuth scope 設定。</div>
+
+    <section>
+      <h2>今天完成的事</h2>
+      <ul>
+        <li>建立每日工作日誌工具的本地版本，支援輸出 Markdown 與 HTML 兩種格式。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>新增直接收集流程，可從 Slack、Notion 與本機 AI session 產生每日輸入資料。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>建立環境變數檔與公開範例檔的分工，避免 token 類資訊被放進範例檔或版本控制。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>修正 Slack channel 設定的 JSON 格式，確認目前已設定 4 個 channel 且 ID 格式有效。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>修復 Python HTTPS 憑證設定，讓本機腳本可以正常連線 Slack 與 Notion API。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>修正 Notion database ID 尾端多出的字元，並確認 Notion API 已可成功連線。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>確認本機已安裝 Git，版本為 Apple Git 2.50.1。<span class="source">來源：本次 Codex 對話</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>遇到的問題與卡點</h2>
+      <ul>
+        <li>Slack API 已可連線，但目前 token 缺少 channels:history 等讀取 scope，因此尚無法抓取頻道訊息。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>Slack workspace 有 app 數量限制，暫時先不繼續新增或調整 Slack app。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>Notion 已連線成功，但今天指定看板沒有符合條件的更新資料。<span class="source">來源：本次 Codex 對話</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>明天的計劃</h2>
+      <ul>
+        <li>確認是否使用既有 Slack app 補齊 OAuth scopes，或改用其他可行的 Slack 匯出方式。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>在 Notion 看板移動或編輯一張測試卡片，再執行只收集 Notion 的流程驗證輸出內容。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>檢查 Notion 看板的實際欄位名稱，必要時調整 title_property 與 status_property。<span class="source">來源：本次 Codex 對話</span></li>
+        <li>決定每日報告是否要接 LLM 摘要層，將原始訊息整理成更自然的完成事項。<span class="source">來源：本次 Codex 對話</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>可新增內容分析</h2>
+      <ul>
+        <li>可以新增「設定狀態」區塊，分別標示 Slack、Notion、AI session 是否已連線成功。</li>
+        <li>可以新增「待授權事項」區塊，集中列出需要管理員或 workspace 權限才能完成的項目。</li>
+        <li>可以把 Notion 測試流程獨立成 --source notion 的日常檢查指令，避免 Slack 尚未完成時影響其他來源。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>來源依據</h2>
+      <ul>
+        <li>本次 Codex 對話：建立日報產生器、收集器、設定檔與 README。</li>
+        <li>本次 Codex 對話：Slack token 與 channel 設定檢查結果。</li>
+        <li>本次 Codex 對話：Notion token、database ID 與 API 連線檢查結果。</li>
+        <li>本次 Codex 對話：Git 安裝狀態檢查結果。</li>
+      </ul>
+    </section>
+
+    <footer>此檔案內容基於今天的協作紀錄整理，未包含 token 或機敏資訊。</footer>
+  </main>
+</body>
+</html>
