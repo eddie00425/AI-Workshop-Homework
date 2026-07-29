@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>寶寶食譜小幫手 · 介面原型</title>
+<style>
+  :root{
+    /* 奶油牛奶底 + 粉藍粉紅 + 薄荷奶油，刻意調成帶暖的中性灰 */
+    --cream:#FBF6EF;
+    --milk:#FFFFFF;
+    --sky:#8FCBE6;
+    --sky-deep:#5FA8CC;
+    --pink:#FFAEC5;
+    --pink-deep:#F98BAC;
+    --mint:#AFE3C4;
+    --butter:#FFE1A0;
+    --ink:#5C4A44;
+    --ink-soft:#8B7A73;
+    --line:#EFE4D8;
+    --bot-bubble:#EAF6FB;
+    --user-bubble:#FFDCE6;
+    --card:#FFFFFF;
+    --shadow:26px 30px 60px -30px rgba(120,90,80,.45);
+    --focus:#F98BAC;
+    --backdrop-1:#DCF0F7;
+    --backdrop-2:#FDEAF0;
+    --backdrop-3:#EAF7EE;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --cream:#2A2430; --milk:#332C3A; --card:#332C3A;
+      --ink:#F3E9EF; --ink-soft:#C6B4C0; --line:#443B4E;
+      --bot-bubble:#3A4552; --user-bubble:#4E3140;
+      --sky:#7FBEDC; --pink:#FF9FBB; --mint:#8FD3AC;
+      --backdrop-1:#2E3A44; --backdrop-2:#3A2A34; --backdrop-3:#28342C;
+      --shadow:26px 30px 70px -30px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="light"]{
+    --cream:#FBF6EF; --milk:#FFFFFF; --card:#FFFFFF;
+    --ink:#5C4A44; --ink-soft:#8B7A73; --line:#EFE4D8;
+    --bot-bubble:#EAF6FB; --user-bubble:#FFDCE6;
+    --backdrop-1:#DCF0F7; --backdrop-2:#FDEAF0; --backdrop-3:#EAF7EE;
+    --shadow:26px 30px 60px -30px rgba(120,90,80,.45);
+  }
+  :root[data-theme="dark"]{
+    --cream:#2A2430; --milk:#332C3A; --card:#332C3A;
+    --ink:#F3E9EF; --ink-soft:#C6B4C0; --line:#443B4E;
+    --bot-bubble:#3A4552; --user-bubble:#4E3140;
+    --backdrop-1:#2E3A44; --backdrop-2:#3A2A34; --backdrop-3:#28342C;
+    --shadow:26px 30px 70px -30px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh;
+    font-family:"SF Pro Rounded","Nunito","Quicksand","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(120% 90% at 15% 0%, var(--backdrop-2) 0%, transparent 55%),
+      radial-gradient(120% 90% at 95% 12%, var(--backdrop-1) 0%, transparent 50%),
+      radial-gradient(140% 100% at 50% 100%, var(--backdrop-3) 0%, transparent 60%),
+      var(--cream);
+    display:flex; flex-direction:column; align-items:center;
+    padding:32px 16px 60px; overflow-x:hidden;
+  }
+  /* 漂浮裝飾 */
+  .sky-deco{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+  .blob{position:absolute; font-size:34px; opacity:.5; animation:float 9s ease-in-out infinite;}
+  .blob.b2{animation-duration:11s;} .blob.b3{animation-duration:13s;}
+  @keyframes float{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-16px) rotate(4deg);}}
+  @media (prefers-reduced-motion:reduce){.blob{animation:none;}}
+
+  .head{position:relative; z-index:1; text-align:center; margin-bottom:22px;}
+  .head h1{font-size:26px; margin:0 0 6px; letter-spacing:.5px; text-wrap:balance;}
+  .head p{margin:0; color:var(--ink-soft); font-size:14px;}
+  .badge{display:inline-flex; gap:6px; align-items:center; background:var(--milk);
+    border:2px solid var(--line); padding:5px 14px; border-radius:999px; font-size:12px;
+    color:var(--ink-soft); margin-bottom:12px; box-shadow:var(--shadow);}
+
+  /* 手機外框 */
+  .phone{position:relative; z-index:1; width:min(400px,100%); background:var(--milk);
+    border-radius:44px; padding:14px; box-shadow:var(--shadow);
+    border:3px solid var(--line);}
+  .screen{background:var(--cream); border-radius:32px; overflow:hidden; display:flex; flex-direction:column;
+    height:640px;}
+  .notch{height:26px; display:flex; justify-content:center;}
+  .notch::before{content:""; width:120px; height:22px; background:var(--milk);
+    border:2px solid var(--line); border-top:0; border-radius:0 0 16px 16px;}
+
+  .appbar{display:flex; align-items:center; gap:10px; padding:6px 18px 12px;}
+  .avatar{width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-size:24px;
+    background:linear-gradient(140deg,var(--sky),var(--pink)); box-shadow:0 6px 14px -6px var(--sky-deep);}
+  .appbar .name{font-size:16px; font-weight:700;}
+  .appbar .status{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:5px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px color-mix(in srgb,var(--mint) 40%,transparent);}
+  .theme-btn{margin-left:auto; border:2px solid var(--line); background:var(--milk); color:var(--ink);
+    width:38px;height:38px;border-radius:50%; cursor:pointer; font-size:16px;}
+
+  .chat{flex:1; overflow-y:auto; padding:8px 16px 16px; display:flex; flex-direction:column; gap:12px;
+    scroll-behavior:smooth;}
+  .chat::-webkit-scrollbar{width:6px;} .chat::-webkit-scrollbar-thumb{background:var(--line); border-radius:99px;}
+
+  .row{display:flex; gap:8px; align-items:flex-end; animation:pop .32s ease both;}
+  .row.me{flex-direction:row-reverse;}
+  @keyframes pop{from{opacity:0; transform:translateY(8px) scale(.98);}to{opacity:1; transform:none;}}
+  .mini{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:15px;flex:0 0 auto;
+    background:linear-gradient(140deg,var(--sky),var(--pink));}
+  .bubble{max-width:78%; padding:11px 14px; border-radius:20px; font-size:14px; line-height:1.55;
+    background:var(--bot-bubble); border-bottom-left-radius:6px;}
+  .row.me .bubble{background:var(--user-bubble); border-bottom-left-radius:20px; border-bottom-right-radius:6px;}
+
+  /* 選項卡片區 */
+  .options{display:flex; flex-wrap:wrap; gap:8px; padding-left:36px;}
+  .options.center{padding-left:0; justify-content:flex-start;}
+  .chip{border:2px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer;
+    padding:10px 14px; border-radius:16px; font-size:13.5px; font-weight:600; transition:.15s;
+    display:flex; align-items:center; gap:7px; box-shadow:0 4px 0 var(--line);}
+  .chip:hover{transform:translateY(-2px); border-color:var(--sky);}
+  .chip:active{transform:translateY(1px); box-shadow:0 1px 0 var(--line);}
+  .chip.sel{background:color-mix(in srgb,var(--pink) 30%,var(--card)); border-color:var(--pink-deep);}
+  .chip.wide{width:100%; justify-content:flex-start;}
+  .chip .emo{font-size:18px;}
+  .chip small{display:block; color:var(--ink-soft); font-weight:500; font-size:11px;}
+  .chip.col{flex-direction:column; align-items:flex-start; gap:2px;}
+  .chip:focus-visible{outline:3px solid var(--focus); outline-offset:2px;}
+  .go{background:linear-gradient(135deg,var(--sky),var(--sky-deep)); color:#fff; border-color:transparent;
+    box-shadow:0 5px 0 rgba(0,0,0,.08);}
+  .go.pink{background:linear-gradient(135deg,var(--pink),var(--pink-deep));}
+
+  /* 食譜結果卡 */
+  .recipe{background:var(--card); border:2px solid var(--line); border-radius:22px; padding:16px;
+    max-width:88%; box-shadow:0 10px 24px -18px rgba(120,90,80,.6); animation:pop .35s ease both;}
+  .recipe h3{margin:0 0 4px; font-size:17px; display:flex; align-items:center; gap:7px;}
+  .tags{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 12px;}
+  .tag{font-size:11px; padding:4px 9px; border-radius:999px; font-weight:700;}
+  .tag.age{background:color-mix(in srgb,var(--sky) 35%,var(--card)); color:var(--ink);}
+  .tag.time{background:color-mix(in srgb,var(--butter) 55%,var(--card)); color:var(--ink);}
+  .tag.tex{background:color-mix(in srgb,var(--mint) 50%,var(--card)); color:var(--ink);}
+  .recipe h4{margin:12px 0 5px; font-size:13px; color:var(--sky-deep); letter-spacing:.4px;}
+  .recipe ul{margin:0; padding-left:18px; font-size:13px; line-height:1.7;}
+  .safe{margin-top:12px; background:color-mix(in srgb,var(--pink) 16%,var(--card));
+    border:1px dashed var(--pink-deep); border-radius:14px; padding:10px 12px; font-size:12.5px; line-height:1.6;}
+  .safe b{color:var(--pink-deep);}
+  .weekgrid{width:100%; border-collapse:collapse; font-size:12px; margin-top:4px;}
+  .weekgrid th,.weekgrid td{border:1px solid var(--line); padding:5px 6px; text-align:center;}
+  .weekgrid th{background:color-mix(in srgb,var(--sky) 22%,var(--card));}
+  .weekgrid .new{background:color-mix(in srgb,var(--butter) 50%,var(--card)); font-weight:700;}
+  .wk-legend{margin:7px 0 0; font-size:11.5px; color:var(--ink-soft); display:flex; align-items:center; gap:6px; line-height:1.5;}
+  .wk-legend .sw{flex:0 0 auto; width:14px; height:14px; border-radius:4px; background:color-mix(in srgb,var(--butter) 50%,var(--card)); border:1px solid var(--line);}
+  /* 採買清單 */
+  .shop{display:flex; flex-direction:column; gap:14px; margin-top:4px;}
+  .shop-h{font-size:12px; font-weight:800; color:var(--sky-deep); margin-bottom:2px; letter-spacing:.4px;}
+  .shop-row{display:flex; align-items:center; gap:9px; padding:7px 0; border-bottom:1px dashed var(--line);}
+  .shop-row:last-child{border-bottom:0;}
+  .shop-emo{font-size:20px; flex:0 0 auto; width:24px; text-align:center;}
+  .shop-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:1px;}
+  .shop-name{font-size:13.5px; font-weight:700;}
+  .shop-sub{font-size:11.5px; color:var(--ink-soft); line-height:1.45;}
+  .badge{flex:0 0 auto; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap;}
+  .b-fresh{background:color-mix(in srgb,var(--mint) 60%,var(--card)); color:var(--ink);}
+  .b-freeze{background:color-mix(in srgb,var(--sky) 45%,var(--card)); color:var(--ink);}
+  .b-stock{background:color-mix(in srgb,var(--butter) 62%,var(--card)); color:var(--ink);}
+  .b-online{background:color-mix(in srgb,var(--pink) 38%,var(--card)); color:var(--ink);}
+
+  .foot{position:relative; z-index:1; margin-top:20px; text-align:center; color:var(--ink-soft); font-size:12px; max-width:400px; line-height:1.6;}
+  .foot .restart{margin-top:10px; border:2px solid var(--line); background:var(--milk); color:var(--ink);
+    padding:8px 18px; border-radius:999px; cursor:pointer; font-weight:700; font-size:13px;}
+  .foot .restart:hover{border-color:var(--sky);}
+  /* Debug 紀錄面板 */
+  .devlog{position:relative; z-index:1; margin-top:26px; width:min(440px,100%);
+    background:var(--card); border:2px solid var(--line); border-radius:22px; padding:18px 20px; box-shadow:var(--shadow);}
+  .devlog h2{margin:0 0 2px; font-size:16px; display:flex; align-items:center; gap:7px;}
+  .devlog-sub{margin:0 0 14px; font-size:12px; color:var(--ink-soft);}
+  .devlog-list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:11px; font-size:13px; line-height:1.6;}
+  .devlog-list li{display:flex; gap:8px; align-items:flex-start;}
+  .devlog-list .txt{flex:1;}
+  .devlog-list code{background:color-mix(in srgb,var(--pink) 18%,var(--card)); padding:1px 5px; border-radius:6px; font-size:12px;}
+  .tagx{flex:0 0 auto; font-size:10px; font-weight:800; padding:3px 8px; border-radius:999px; margin-top:1px;}
+  .tagx.fix{background:color-mix(in srgb,var(--mint) 55%,var(--card)); color:var(--ink);}
+  .tagx.feat{background:color-mix(in srgb,var(--sky) 48%,var(--card)); color:var(--ink);}
+</style>
+</head>
+<body>
+  <div class="sky-deco" aria-hidden="true">
+    <span class="blob"  style="top:8%;left:6%;">☁️</span>
+    <span class="blob b2" style="top:16%;right:8%;">⭐</span>
+    <span class="blob b3" style="top:60%;left:4%;">🌈</span>
+    <span class="blob b2" style="top:72%;right:6%;">☁️</span>
+    <span class="blob" style="top:40%;right:3%;">🍼</span>
+  </div>
+
+  <div class="head">
+    <span class="badge">🐻 互動原型 · 引導式對話</span>
+    <h1>寶寶食譜小幫手</h1>
+    <p>安全第一的嬰幼兒副食品顧問 · 點選看看流程</p>
+  </div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="notch"></div>
+      <div class="appbar">
+        <div class="avatar">🐻</div>
+        <div>
+          <div class="name">寶寶食譜小幫手</div>
+          <div class="status"><span class="dot"></span>線上 · 安全把關中</div>
+        </div>
+        <button class="theme-btn" id="themeBtn" title="切換日夜模式" aria-label="切換日夜模式">🌙</button>
+      </div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    這是介面示範，內容依 System-Prompt-v2 的安全規則與引導流程設計。<br>
+    實際營養份量以衛福部國民健康署最新公告為準，不作醫療診斷。
+    <br><button class="restart" id="restart">🔄 重新開始</button>
+  </div>
+
+  <section class="devlog">
+    <h2>🐞 Debug 紀錄</h2>
+    <p class="devlog-sub">原型開發中發現並修正的問題 · 2026-07-29</p>
+    <ul class="devlog-list">
+      <li><span class="tagx fix">修正</span><span class="txt"><b>亂碼字元</b>：結果卡文字出現壞掉的字元 <code>�47</code>，改為 🍽️。</span></li>
+      <li><span class="tagx fix">修正</span><span class="txt"><b>結果卡未隨月齡變化</b>：1–3 歲仍給七倍粥／泥。改為月齡對應質地——4–6 泥、7–9 稠泥＋七倍粥、10–12 軟丁＋軟飯、1–3 一般餐（軟飯／麵，可咀嚼、不打泥）。</span></li>
+      <li><span class="tagx fix">修正</span><span class="txt"><b>一週餐表只有 3 天</b>：補滿七天（一～日），依每日餐數展開早／午／晚。</span></li>
+      <li><span class="tagx fix">修正</span><span class="txt"><b>採買清單與餐表對不上</b>：原本各月齡寫死。改為<b>從餐表反推</b>，統計七天實際食材次數後加總份量，驗證餐表食材零遺漏。</span></li>
+      <li><span class="tagx fix">修正</span><span class="txt"><b>食材輪替 bug</b>：索引公式在偶數長度只輪到一半蛋白質（1–3 歲少了雞肉／牛肉／蛋）。改公式後六種蛋白質全數輪到。</span></li>
+      <li><span class="tagx feat">改善</span><span class="txt"><b>採買清單格式與 emoji</b>：原本一整行難讀、且 🥬 被套在所有品項。改為分類卡片（蔬菜／蛋白質／主食／常備），每樣配對正確 emoji（🎃🥦🍠🥕🍗🥩🐟🥚🍚🍜），並加保存／通路徽章（🧺當週鮮用 · ❄️冷凍分裝 · 🧊做冰磚 · 🗄️常備 · 📦可網購）。</span></li>
+      <li><span class="tagx fix">修正</span><span class="txt"><b>試敏標記無說明且恆亮</b>：黃底＊沒有圖例、且不論是否選擇試新食材都出現。改為加上圖例、只有選「想試新食材」時才標記、並放在主餐（非早餐）；1–3 歲說明多指蝦／堅果醬等首次食材。</span></li>
+      <li><span class="tagx feat">改善</span><span class="txt"><b>早餐過重</b>：10–12 個月與 1–3 歲三餐都排肉＋菜＋飯／麵的正餐。改為早餐清淡（蔬菜蛋捲／蛋黃粥／水果優格），午、晚才是主餐，並加註每餐約 ½–1 碗的份量說明。</span></li>
+      <li><span class="tagx feat">改善</span><span class="txt"><b>試敏改由選擇食材驅動</b>：對話中改成「想試哪些新食材」可複選；系統<b>一天只排 1 種</b>、分散不同天觀察，並在採買清單獨立列出試敏食材。小月齡維持奶為主、餐數少，不強加三餐。</span></li>
+    </ul>
+  </section>
+
+<script>
+const chat = document.getElementById('chat');
+let state = { mode:null, age:null, picks:[] };
+
+const MODES = [
+  {k:'cook',  emo:'🥣', t:'煮一餐',       s:'用現有食材做一道'},
+  {k:'week',  emo:'📅', t:'一週備餐',     s:'一次採買＋一次備料'},
+  {k:'sick',  emo:'🤒', t:'生病怎麼吃',   s:'喉嚨痛、鼻塞、腹瀉'},
+  {k:'picky', emo:'🙅', t:'不吃某樣食材', s:'找替代或換做法'},
+  {k:'aller', emo:'🌡️', t:'疑似過敏',     s:'幫你一起釐清'},
+  {k:'trip',  emo:'🧳', t:'出遊帶餐',     s:'免加熱、好攜帶'},
+];
+const AGES = [
+  {k:'4-6',  t:'4–6 個月',  s:'開始嘗試泥'},
+  {k:'7-9',  t:'7–9 個月',  s:'稠泥·開始補鐵'},
+  {k:'10-12',t:'10–12 個月',s:'軟丁·手指食物'},
+  {k:'1-3',  t:'1–3 歲',    s:'幼兒餐'},
+];
+
+function scrollDown(){ requestAnimationFrame(()=> chat.scrollTop = chat.scrollHeight); }
+
+function bot(html, delay=350){
+  return new Promise(res=>{
+    setTimeout(()=>{
+      const row=document.createElement('div'); row.className='row';
+      row.innerHTML=`<div class="mini">🐻</div><div class="bubble">${html}</div>`;
+      chat.appendChild(row); scrollDown(); res();
+    }, delay);
+  });
+}
+function me(text){
+  const row=document.createElement('div'); row.className='row me';
+  row.innerHTML=`<div class="mini">👶</div><div class="bubble">${text}</div>`;
+  chat.appendChild(row); scrollDown();
+}
+function opts(items, center=false){
+  const box=document.createElement('div'); box.className='options'+(center?' center':'');
+  items.forEach(it=>{
+    const b=document.createElement('button'); b.className='chip '+(it.cls||''); b.type='button';
+    b.innerHTML = it.html || `<span class="emo">${it.emo||''}</span><span>${it.t}${it.s?`<small>${it.s}</small>`:''}</span>`;
+    if(it.col) b.classList.add('col');
+    b.onclick=()=>it.on(box,b);
+    box.appendChild(b);
+  });
+  chat.appendChild(box); scrollDown();
+  return box;
+}
+function clearOptions(){ chat.querySelectorAll('.options').forEach(o=>o.remove()); }
+
+/* ---- 流程 ---- */
+async function start(){
+  chat.innerHTML=''; state={mode:null,age:null,picks:[]};
+  await bot('嗨～我是寶寶食譜小幫手 👶<br>今天想幫寶寶處理哪一種呢？', 200);
+  opts(MODES.map(m=>({emo:m.emo,t:m.t,s:m.s,col:true,cls:'',on:()=>pickMode(m)})));
+}
+async function pickMode(m){
+  state.mode=m; clearOptions(); me(`${m.emo} ${m.t}`);
+  await bot('好的！先確認一下 <b>寶寶月齡</b>，這會影響質地和食材安全 🍼');
+  opts(AGES.map(a=>({t:a.t,s:a.s,col:true,on:()=>pickAge(a)})));
+}
+async function pickAge(a){
+  state.age=a; clearOptions(); me(`${a.t}`);
+  const flows={cook:askCook,week:askWeek,sick:askSick,picky:askPicky,aller:askAller,trip:askTrip};
+  flows[state.mode.k]();
+}
+
+/* 煮一餐：多選食材 */
+async function askCook(){
+  await bot('冰箱裡有哪些食材呢？點一點你有的 👇（可複選）');
+  const ings=[['🎃','南瓜'],['🍗','雞肉'],['🥦','花椰菜'],['🍠','地瓜'],['🥚','蛋黃'],['🥬','菠菜']];
+  const box=opts(ings.map(([e,t])=>({emo:e,t:t,on:(bx,b)=>{
+    b.classList.toggle('sel');
+    state.picks.includes(t)?state.picks.splice(state.picks.indexOf(t),1):state.picks.push(t);
+  }})));
+  const done=document.createElement('button'); done.className='chip go'; done.type='button';
+  done.innerHTML='✅ 選好了'; done.onclick=()=>confirmCook(); box.appendChild(done);
+}
+async function confirmCook(){
+  if(state.picks.length===0) state.picks=['南瓜','雞肉'];
+  clearOptions(); me(state.picks.join('、'));
+  await bot(`幫你整理一下 👇<br>🍼 ${state.age.t}｜煮一餐｜食材：${state.picks.join('、')}<br>這樣就開始囉？`);
+  opts([
+    {html:'✨ 開始生成',cls:'go',on:()=>showRecipe()},
+    {html:'✏️ 重選',on:()=>start()},
+  ],true);
+}
+
+async function askWeek(){
+  const k=state.age.k;
+  await bot('好耶～一週備餐！這週想幫寶寶<b>試哪些新食材</b>呢？可複選 🌱<br>我會<b>一天只排 1 種</b>、分散在不同天各觀察 3–5 天。');
+  const pool = k==='4-6'
+    ? [['🎃','南瓜'],['🥦','花椰菜'],['🥕','紅蘿蔔'],['🍠','地瓜'],['🥬','菠菜']]
+    : [['🥚','蛋'],['🐟','魚'],['🦐','蝦'],['🫛','豆腐'],['🥜','花生醬'],['🍓','草莓'],['🌾','小麥'],['🧀','乳製品']];
+  state.newFoods=[];
+  const box=opts(pool.map(([e,t])=>({emo:e,t:t,on:(bx,b)=>{
+    b.classList.toggle('sel');
+    const i=state.newFoods.indexOf(t); i>=0?state.newFoods.splice(i,1):state.newFoods.push(t);
+  }})));
+  const none=document.createElement('button'); none.className='chip'; none.type='button';
+  none.innerHTML='🍚 先不試新的'; none.onclick=()=>{state.newFoods=[]; me('先用熟悉的'); runWeek();}; box.appendChild(none);
+  const done=document.createElement('button'); done.className='chip go'; done.type='button';
+  done.innerHTML='✅ 選好了'; done.onclick=()=>{ me(state.newFoods.length?('想試：'+state.newFoods.join('、')):'先用熟悉的'); runWeek(); }; box.appendChild(done);
+}
+async function runWeek(){ clearOptions(); showWeek(); }
+
+async function askSick(){
+  await bot('辛苦了 🥺 寶寶主要是哪個狀況？');
+  opts([
+    {emo:'🗣️',t:'喉嚨痛吞不下',on:()=>sickR('throat')},
+    {emo:'👃',t:'鼻塞沒食慾',on:()=>sickR('nose')},
+    {emo:'🤢',t:'腹瀉／嘔吐',on:()=>sickR('gi')},
+  ]);
+}
+async function askPicky(){
+  await bot('沒關係，挑食很正常 😊 寶寶不吃什麼呢？');
+  opts([['🥬','菠菜'],['🥕','紅蘿蔔'],['🍳','蛋']].map(([e,t])=>({emo:e,t:t,on:()=>pickyR(t)})));
+}
+async function askAller(){
+  await bot('先確認嚴重度，這很重要 ⚠️ 寶寶目前的反應是？');
+  opts([
+    {html:'🚨 臉腫／呼吸困難／大範圍疹',cls:'wide',on:()=>allerR('severe')},
+    {html:'⚠️ 局部小疹／輕微腸胃不適',cls:'wide',on:()=>allerR('mild')},
+  ]);
+}
+async function askTrip(){
+  await bot('出遊囉～這趟大概多久呢？');
+  opts([
+    {emo:'🌤️',t:'半天',on:()=>tripR()},
+    {emo:'🌞',t:'一整天',on:()=>tripR()},
+    {emo:'🌙',t:'過夜',on:()=>tripR()},
+  ]);
+}
+
+/* ---- 結果卡 ---- */
+function card(html){ const d=document.createElement('div'); d.className='recipe'; d.innerHTML=html; chat.appendChild(d); scrollDown(); }
+function afterResult(){
+  opts([{html:'🔄 再問一題',cls:'go pink',on:()=>start()}],true);
+}
+
+/* 依月齡設定：質地、備料方式、提醒（1–3 歲不再用粥/泥）；採買清單由餐表反推 */
+const AGECFG={
+  '4-6':{tex:'滑順泥',mpd:1,chip:'🧊 泥冰磚',
+    prep:'蒸軟打成滑順泥 → 分格冰磚；米糊現泡',
+    note:'4–6m 以吞嚥練習為主、奶仍是主要營養。每 3–5 天才換一種新食材（*為新食材日），一次只試一種。泥冰磚 1 週內用完、不重複冷凍。'},
+  '7-9':{tex:'稠泥／軟顆粒',mpd:2,chip:'🧊 冰磚 mix-and-match',
+    prep:'煮一鍋七倍粥底＋各色蔬菜/肉泥 → 分格冰磚，標品名＋日期',
+    note:'*為試敏日：當天不併其他新食材，觀察 3–5 天。冰磚 1 週內用完、不重複冷凍、吃剩不回冰。'},
+  '10-12':{tex:'軟丁／手指食物',mpd:3,chip:'🍱 軟丁分裝',
+    prep:'煮軟飯與五倍粥、各色蔬菜軟丁與肉末 → 分裝冷凍；手指食物當天現做',
+    note:'*為試敏日，仍一次一種、觀察 3–5 天。手指食物需好抓、入口即化或夠軟，全程注意窒息。分裝冷凍 1 週內用完。'},
+  '1-3':{tex:'一般質地 · 可咀嚼',mpd:3,chip:'🍱 常備菜分裝',
+    prep:'煮好軟飯分裝、備 2–3 道常備菜、蛋白質分裝冷凍——這階段可咀嚼，不需打泥',
+    note:'這階段已能自行咀嚼，餐點接近大人但清淡不加重鹽糖，分 3 正餐＋點心。若嘗試全新食材（如蝦、堅果醬）仍單獨少量試。常備菜冷藏 2 天、冷凍 1 週內用完。'},
+};
+
+/* 產生「七天」計畫（含每格用到的食材 tokens），採買清單據此反推 */
+function weekPlan(ageK, newFoods){
+  newFoods = newFoods || [];
+  const rows=['一','二','三','四','五','六','日'];
+  let cols, matrix;
+  if(ageK==='4-6'){
+    // 小月齡：一天一餐嘗試，每種食材連續幾天觀察（每種食材本身就是試敏）
+    cols=['嘗試餐'];
+    const picked=newFoods.filter(f=>ING[tok(f)]);
+    const use=picked.length?picked:['南瓜','花椰菜','地瓜'];
+    const per=Math.ceil(7/use.length);
+    matrix=[];
+    for(let r=0;r<7;r++){
+      const idx=Math.min(use.length-1, Math.floor(r/per));
+      const first = r===0 || Math.floor((r-1)/per)!==idx;
+      const v=tok(use[idx]);
+      matrix.push([{veg:v,prot:null,carb:'米糊',name:vegName(v)+'泥'+(first?'*':''),isNew:first,trialFood:first?use[idx]:null}]);
+    }
+  } else {
+    const toddler = ageK==='1-3', big = ageK==='10-12' || toddler;
+    cols = ageK==='7-9' ? ['早','午'] : ['早','午','晚'];
+    const veg=['南瓜','花椰','菠菜','地瓜','紅蘿蔔','高麗菜'];
+    const prot = toddler ? ['雞肉','豬肉','牛肉','鮭魚','蛋','豆腐'] : ['雞肉','豬肉','蛋黃','鱈魚','豆腐'];
+    const carb = ageK==='7-9' ? ['粥'] : ageK==='10-12' ? ['軟飯','粥','軟飯'] : ['軟飯','炊飯','麵','燴飯'];
+    const mainStart = big ? 1 : 0;   // 大月齡早餐較輕，主餐從「午」開始
+    matrix=[]; let k=0;
+    for(let r=0;r<7;r++){ const row=[]; for(let c=0;c<cols.length;c++){
+      if(big && c===0){                                    // 早餐：清淡、非主餐
+        const v=veg[r%veg.length];
+        if(r%2===0){
+          row.push(toddler
+            ? {veg:v,prot:'蛋',carb:null,name:`${vegName(v)}蛋捲`,isNew:false,light:true}
+            : {veg:v,prot:'蛋黃',carb:'粥',name:`${vegName(v)}蛋黃粥`,isNew:false,light:true});
+        } else {
+          row.push({veg:null,prot:null,carb:null,name: toddler?'水果優格':'水果泥＋乳品',isNew:false,light:true,dairy:true});
+        }
+      } else {                                             // 主餐
+        const v=veg[k%veg.length], p=prot[(k+Math.floor(k/veg.length))%prot.length], cb=carb[k%carb.length];
+        row.push({veg:v,prot:p,carb:cb,name:(toddler?`${p}${vegName(v)}${cb}`:`${vegName(v)}${p}${cb}`),isNew:false});
+      }
+      k++;
+    } matrix.push(row); }
+    // 試敏 overlay：每種新食材各排一天（一天最多 1 種），分散觀察
+    newFoods.slice(0,7).forEach((f,i)=>{
+      const cell=matrix[i][mainStart];
+      cell.isNew=true; cell.trialFood=f; cell.name=`${cell.name}＋${f}(首試)*`;
+    });
+  }
+  return {cols,rows,matrix};
+}
+function renderTable(plan){
+  let html='<table class="weekgrid"><tr><th></th>'+plan.cols.map(c=>`<th>${c}</th>`).join('')+'</tr>';
+  plan.matrix.forEach((row,i)=>{ html+=`<tr><th>${plan.rows[i]}</th>`+row.map(c=>`<td class="${c.isNew?'new':''}">${c.name}</td>`).join('')+'</tr>'; });
+  return html+'</table>';
+}
+
+const VEGNAME={花椰:'花椰菜'};
+function vegName(v){return VEGNAME[v]||v;}
+/* 每樣食材對應的 emoji 與市場購買單位 */
+const ING={
+  南瓜:{e:'🎃',buy:'1 小顆(約400g)'}, 花椰:{e:'🥦',buy:'1 小朵'}, 菠菜:{e:'🥬',buy:'1 把'},
+  地瓜:{e:'🍠',buy:'1–2 條'}, 紅蘿蔔:{e:'🥕',buy:'1 條'}, 高麗菜:{e:'🥗',buy:'¼ 顆'},
+  雞肉:{e:'🍗'}, 豬肉:{e:'🥩'}, 牛肉:{e:'🥩'}, 鮭魚:{e:'🐟',buy:'1 片'}, 鱈魚:{e:'🐟',buy:'1 片'}, 豆腐:{e:'🫛',buy:'1 盒'},
+};
+/* 試敏食材對應 emoji；tok 把顯示名轉回內部 token */
+const TRIALE={蛋:'🥚',魚:'🐟',蝦:'🦐',豆腐:'🫛','花生醬':'🥜',草莓:'🍓',小麥:'🌾',乳製品:'🧀',南瓜:'🎃','花椰菜':'🥦',紅蘿蔔:'🥕',地瓜:'🍠',菠菜:'🥬'};
+function tok(n){return n==='花椰菜'?'花椰':n;}
+function protBuy(p,g){
+  if(ING[p]&&ING[p].buy) return ING[p].buy;
+  return `約 ${Math.max(100,Math.ceil(g/50)*50)}g（1 塊/盒）`;
+}
+const BADGE={
+  fresh:{c:'b-fresh',t:'🧺 當週鮮用'}, cube:{c:'b-freeze',t:'🧊 做冰磚'},
+  freeze:{c:'b-freeze',t:'❄️ 冷凍分裝'}, stock:{c:'b-stock',t:'🗄️ 常備'}, online:{c:'b-online',t:'📦 可網購'},
+};
+/* 從餐表 matrix 統計實際用量，產生分類化的採買清單 */
+function shopping(ageK, matrix){
+  const perVeg={'4-6':20,'7-9':30,'10-12':30,'1-3':40}[ageK];
+  const perProt={'4-6':0,'7-9':20,'10-12':25,'1-3':35}[ageK];
+  const infant = ageK!=='1-3';
+  const veg={}, prot={}; let egg=0, rice=0, noodle=0;
+  matrix.flat().forEach(c=>{
+    if(c.veg) veg[c.veg]=(veg[c.veg]||0)+1;
+    if(c.prot){ (c.prot==='蛋黃'||c.prot==='蛋') ? egg++ : prot[c.prot]=(prot[c.prot]||0)+1; }
+    if(c.carb==='麵') noodle++; else if(c.carb&&c.carb!=='米糊') rice++;
+  });
+  const rows=[];
+  Object.entries(veg).forEach(([v,n])=> rows.push({cat:'veg',e:ING[v].e,name:vegName(v),sub:`需約 ${n*perVeg}g · ${n} 餐　買 ${ING[v].buy}`,badge:'fresh'}));
+  Object.entries(prot).forEach(([p,n])=> rows.push({cat:'prot',e:(ING[p]||{}).e||'🍽️',name:p,sub:`需約 ${n*perProt}g · ${n} 餐　買 ${protBuy(p,n*perProt)}`,badge:ageK==='7-9'?'cube':'freeze'}));
+  if(egg) rows.push({cat:'prot',e:'🥚',name:'雞蛋',sub:`需 ${egg} 顆（${infant?'取蛋黃':'全蛋'}）　買 ${Math.max(1,Math.ceil(egg/10))} 盒`,badge:'stock'});
+  if(rice) rows.push({cat:'staple',e:'🍚',name:'白米',sub:`${rice} 餐份　買約 ${Math.max(1,Math.round(rice/3))} 杯（煮${infant?'粥底':'軟飯'}）`,badge:'stock'});
+  if(noodle) rows.push({cat:'staple',e:'🍜',name:'寶寶麵條',sub:`${noodle} 餐份　買 1 包`,badge:'online'});
+  if(ageK==='4-6'||ageK==='7-9') rows.push({cat:'other',e:'🥣',name:'嬰兒含鐵米精',sub:'搜尋「嬰兒 含鐵 米精」',badge:'online'});
+  if(ageK==='10-12'||ageK==='1-3') rows.push({cat:'other',e:'🥛',name:'乳品·水果',sub:'香蕉、無糖優格等　超市／超商',badge:'fresh'});
+  if(ageK!=='4-6'){
+    [...new Set(matrix.flat().filter(c=>c.trialFood).map(c=>c.trialFood))]
+      .forEach(f=> rows.push({cat:'trial',e:TRIALE[f]||'🌱',name:f,sub:'少量嘗試 · 單獨一天觀察',badge:'fresh'}));
+  }
+  return rows;
+}
+function renderShop(rows){
+  const groups=[['veg','🥦 蔬菜'],['prot','🍗 蛋白質'],['staple','🍚 主食'],['other','🛒 常備·補貨'],['trial','🌱 試敏食材（少量）']];
+  let html='<div class="shop">';
+  groups.forEach(([cat,title])=>{
+    const rs=rows.filter(r=>r.cat===cat); if(!rs.length) return;
+    html+=`<div class="shop-sec"><div class="shop-h">${title}</div>`;
+    rs.forEach(r=>{ const b=BADGE[r.badge];
+      html+=`<div class="shop-row"><span class="shop-emo">${r.e}</span><span class="shop-main"><span class="shop-name">${r.name}</span><span class="shop-sub">${r.sub}</span></span><span class="badge ${b.c}">${b.t}</span></div>`;
+    });
+    html+='</div>';
+  });
+  return html+'</div>';
+}
+
+async function showRecipe(){
+  clearOptions();
+  const cfg=AGECFG[state.age.k], k=state.age.k;
+  await bot('好囉！這道很快就能上桌 🍽️');
+  const p0=state.picks[0]||'南瓜', p1=state.picks[1]||'雞肉';
+  let name, ings, steps, nutri, safe;
+  if(k==='4-6'){
+    name=`${p0}泥`;
+    ings=[`${p0} 30g（蒸軟壓滑順泥）`,'米糊／十倍粥 適量'];
+    steps=['食材蒸至全熟軟爛','壓成滑順無顆粒的泥','放涼到適口溫度，一次只試一種新食材'];
+    nutri=`${p0}溫和好消化，適合當作初期嘗試 🌱`;
+    safe='不加鹽糖蜂蜜；質地壓成滑順無顆粒；一次只試一種、觀察 3–5 天。';
+  } else if(k==='1-3'){
+    name=`${p1}${p0}軟飯`;
+    ings=[`${p0} 40g（切小丁煮軟）`,`${p1} 30g（切小丁煮熟）`,'軟飯 1 小碗'];
+    steps=['食材切小丁、煮至全熟','與軟飯拌勻，清淡少調味','擺盤讓寶寶練習自己咀嚼與抓握'];
+    nutri=`${p0}提供維生素，${p1}補充蛋白質與鐵 💪`;
+    safe=`清淡少調味；${p1}全熟去骨；食材切小丁避免噎到，可讓寶寶自己咀嚼。可分裝冷凍，1 週內用完。`;
+  } else if(k==='10-12'){
+    name=`${p0}${p1}軟飯`;
+    ings=[`${p0} 30g（蒸軟切小丁）`,`${p1} 25g（煮熟切小丁或壓軟）`,'五倍粥或軟飯 100g'];
+    steps=['食材蒸/煮至全熟','切成好抓的軟丁或壓成軟顆粒','與粥／軟飯拌勻，放涼到適口溫度'];
+    nutri=`${p0}提供維生素，${p1}補鐵補鋅 💪`;
+    safe=`不加鹽糖；${p1}全熟去骨；切成好抓的軟丁、避免噎到。可分裝冷凍，1 週內用完。`;
+  } else {
+    name=`${p0}${p1}粥`;
+    ings=[`${p0} 30g（蒸軟壓泥）`,`${p1} 20g（煮熟打泥）`,'七倍粥底 100g'];
+    steps=['食材分別蒸/煮至全熟軟爛','壓成稠泥或軟顆粒','與粥底拌勻，放涼到適口溫度'];
+    nutri=`${p0}提供維生素，${p1}補鐵補鋅 💪`;
+    safe=`不加鹽糖；${p1}確認無小骨、全熟；質地壓到寶寶好吞。可分裝冷凍，1 週內用完。`;
+  }
+  card(`
+    <h3>🍚 ${name}</h3>
+    <div class="tags">
+      <span class="tag age">👶 ${state.age.t}</span>
+      <span class="tag time">⏱️ 約 15 分鐘 · 簡單</span>
+      <span class="tag tex">🥄 ${cfg.tex}</span>
+    </div>
+    <h4>食材</h4>
+    <ul>${ings.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <h4>步驟</h4>
+    <ul>${steps.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <h4>營養重點</h4>
+    <ul><li>${nutri}</li></ul>
+    <div class="safe"><b>安全提醒</b>：${safe}</div>
+  `);
+  afterResult();
+}
+
+async function showWeek(){
+  const k=state.age.k, cfg=AGECFG[k], infant = k!=='1-3', big = (k==='10-12'||k==='1-3');
+  const plan=weekPlan(k, state.newFoods);
+  const list=shopping(k, plan.matrix);
+  const hasNew = plan.matrix.flat().some(c=>c.isNew);
+  const trialList=[...new Set(plan.matrix.flat().filter(c=>c.isNew&&c.trialFood).map(c=>c.trialFood))];
+  const legend = hasNew ? `<p class="wk-legend"><span class="sw"></span>黃底＊＝試敏日：<b>一天只加 1 種</b>新食材${trialList.length?`（${trialList.join('、')}）`:''}，單獨少量、分散觀察 3–5 天。</p>` : '';
+  const portion = big ? '　幼兒每餐約 ½–1 碗，早餐較清淡、午／晚為主餐。' : '';
+  const smallNote = (k==='4-6'||k==='7-9') ? '　小月齡以奶為主、副食品餐數少，不需三餐。' : '';
+  await bot(infant?'幫你排好一週囉～靠「冰磚/分裝組合」變化，一次採買、一次備料 🧊'
+                  :'幫你排好一週囉～用「常備菜分裝」變化，一次採買、一次備料 🍱');
+  card(`
+    <h3>📅 一週備餐計畫</h3>
+    <div class="tags">
+      <span class="tag age">👶 ${state.age.t}</span>
+      <span class="tag time">🛒 一次採買 · 每日 ${cfg.mpd} 餐</span>
+      <span class="tag tex">${cfg.chip}</span>
+    </div>
+    <h4>① 一週餐表（七天）</h4>
+    ${renderTable(plan)}
+    ${legend}
+    <h4>② 採買清單（對應上表實際用量）</h4>
+    ${renderShop(list)}
+    <h4>③ 備料計畫</h4>
+    <ul><li>${cfg.prep}</li></ul>
+    <div class="safe"><b>提醒</b>：${cfg.note}${portion}${smallNote}　購買量取市場單位會略有剩餘，多的可給大人吃。</div>
+  `);
+  afterResult();
+}
+
+async function sickR(kind){
+  clearOptions();
+  const map={
+    throat:['🗣️ 喉嚨痛的舒緩餐','質地降級回滑順、微涼不燙','滑順南瓜粥、涼香蕉泥、(1歲+)無糖優格','避免酸、粗糙、太燙的食物刺激喉嚨'],
+    nose:['👃 沒食慾的暖心餐','少量多餐、不強迫','香氣溫和的粥、好入口的蔬果泥','維持奶量與水分最重要，吃多少算多少'],
+    gi:['🤢 腸胃不適的清淡餐','補水第一（電解質液）','清淡粥、蘋果泥；避免含糖果汁','少量多次，觀察是否脫水'],
+  };
+  const [t,f1,f2,f3]=map[kind];
+  me(t.replace(/^..\s/,''));
+  await bot('生病期間先<b>暫停試新食材</b>喔，這是舒緩用的輔助餐 🍵');
+  card(`
+    <h3>${t}</h3>
+    <div class="tags"><span class="tag age">👶 ${state.age.t}</span><span class="tag tex">🥄 好吞好消化</span></div>
+    <h4>飲食方向</h4><ul><li>${f1}</li><li>${f2}</li><li>${f3}</li></ul>
+    <div class="safe"><b>🚩 要看醫生</b>：發燒不退、尿變少沒精神、一直吐/拉、呼吸急促 → 請儘快就醫，飲食只是輔助照護。</div>
+  `);
+  afterResult();
+}
+
+async function pickyR(food){
+  clearOptions(); me(`不吃${food}`);
+  await bot(`沒問題！我幫你用<b>同營養素</b>換食材，也給換個做法的點子 😊`);
+  const alt={ '菠菜':'紅肉、蛋黃、其他深綠蔬菜（同樣補鐵）',
+              '紅蘿蔔':'南瓜、地瓜（同樣補 β-胡蘿蔔素）',
+              '蛋':'豆腐、白肉魚、雞肉（同樣補蛋白質）' }[food];
+  card(`
+    <h3>🔄 ${food} 的替代方案</h3>
+    <div class="tags"><span class="tag age">👶 ${state.age.t}</span></div>
+    <h4>營養不漏接</h4><ul><li>${alt}</li></ul>
+    <h4>換個做法再試試</h4>
+    <ul><li>改變質地/形狀/擺盤，做成手指食物或小煎餅</li><li>重複溫和地給（常需 8–15 次才接受），不強迫不追餵</li></ul>
+    <div class="safe"><b>小提醒</b>：偶爾不吃某樣很正常，均衡多樣比「一定要吃這樣」更重要 💛</div>
+  `);
+  afterResult();
+}
+
+async function allerR(level){
+  clearOptions();
+  if(level==='severe'){
+    me('臉腫／呼吸困難');
+    await bot('這是<b>急症</b>！請立刻帶寶寶就醫或打 119 🚑<br>不要在這裡等待，也先不要再餵任何食物。');
+    card(`
+      <h3>🚨 疑似嚴重過敏反應</h3>
+      <div class="safe"><b>立即行動</b>：呼吸困難、臉/嘴唇腫、大範圍疹屬急症，請馬上就醫／119。<br>事後就醫時，帶上「最近吃過什麼」的紀錄給醫師。</div>
+    `);
+    afterResult(); return;
+  }
+  me('局部小疹／輕微不適');
+  await bot('好，我幫你<b>反推可疑食材</b>（不是診斷喔）。最近 3–5 天有加什麼新食材呢？<br>示範：假設加了「蛋黃、草莓」');
+  card(`
+    <h3>⚠️ 過敏釐清（協助縮小範圍）</h3>
+    <div class="tags"><span class="tag age">👶 ${state.age.t}</span></div>
+    <h4>可疑食材排序</h4>
+    <ul><li>1. 草莓（高致敏、近日新加）</li><li>2. 蛋黃（常見致敏，但已試多日）</li></ul>
+    <h4>建議（非診斷）</h4>
+    <ul><li>暫停最可疑的「草莓」，記錄飲食與症狀日誌</li><li>是否真過敏、能否再試 → 交由兒科／過敏科評估</li></ul>
+    <div class="safe"><b>界線</b>：我只幫忙縮小懷疑範圍，不做診斷、不判定終身過敏；曾有嚴重反應者請勿自行在家再試。</div>
+  `);
+  afterResult();
+}
+
+async function tripR(){
+  clearOptions();
+  await bot('幫你配好免加熱、好攜帶的出遊餐點 🧺');
+  card(`
+    <h3>🧳 出遊帶餐清單</h3>
+    <div class="tags"><span class="tag age">👶 ${state.age.t}</span><span class="tag tex">🍌 免加熱即食</span></div>
+    <h4>自帶（免加熱）</h4>
+    <ul><li>香蕉、酪梨（自帶包裝好剝）</li><li>市售常溫嬰兒粥／果泥 pouch</li><li>寶寶米餅（10m+，入口即化）</li></ul>
+    <h4>超商超市救急</h4>
+    <ul><li>香蕉、原味地瓜、無糖優格（需保冷）</li></ul>
+    <div class="safe"><b>食安</b>：保冷袋＋冰寶；易腐食物離開冷藏勿超過約 4 小時；可疑就丟。水果整顆要切小塊避免噎到。</div>
+  `);
+  afterResult();
+}
+
+/* 主題切換 */
+const themeBtn=document.getElementById('themeBtn');
+function currentDark(){
+  const t=document.documentElement.getAttribute('data-theme');
+  if(t) return t==='dark';
+  return matchMedia('(prefers-color-scheme: dark)').matches;
+}
+themeBtn.onclick=()=>{
+  const dark=!currentDark();
+  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
+  themeBtn.textContent = dark?'☀️':'🌙';
+};
+document.getElementById('restart').onclick=start;
+start();
+</script>
+</body>
+</html>
