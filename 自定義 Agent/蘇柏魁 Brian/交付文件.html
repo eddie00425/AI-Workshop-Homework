@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>虛擬訪談助理 — 三份交付文件</title>
+<style>
+  :root {
+    --ground: #FFFFFF;
+    --ink: #14161B;
+    --body: #2B2F38;
+    --muted: #5C626E;
+    --rule: #E4E7EC;
+    --wash: #F6F7F9;
+    --accent: #1D3FBB;
+    --accent-wash: #EEF1FC;
+
+    --serif: Charter, "Iowan Old Style", Georgia, "Noto Serif TC", "Songti TC", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+    --measure: 680px;
+    --rail: 148px;
+    --rail-gap: 52px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #101216; --ink: #EDEFF3; --body: #C9CED8; --muted: #8E96A5;
+      --rule: #262A31; --wash: #191C22; --accent: #8AA5FF; --accent-wash: #1A2036;
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #FFFFFF; --ink: #14161B; --body: #2B2F38; --muted: #5C626E;
+    --rule: #E4E7EC; --wash: #F6F7F9; --accent: #1D3FBB; --accent-wash: #EEF1FC;
+  }
+  :root[data-theme="dark"] {
+    --ground: #101216; --ink: #EDEFF3; --body: #C9CED8; --muted: #8E96A5;
+    --rule: #262A31; --wash: #191C22; --accent: #8AA5FF; --accent-wash: #1A2036;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--ground);
+    color: var(--body);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 24px 120px;
+  }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    background: var(--wash);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* ── column + hanging margin rail ───────────────────── */
+  .col { max-width: var(--measure); margin: 0 auto; position: relative; }
+  .rail { display: none; }
+  @media (min-width: 1140px) {
+    .rail {
+      display: block;
+      position: absolute;
+      right: 100%;
+      margin-right: var(--rail-gap);
+      width: var(--rail);
+      top: 0.55em;
+      text-align: right;
+      font-family: var(--sans);
+      font-size: 13px;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+    }
+    .rail .rail-name { display: block; font-weight: 600; color: var(--ink); }
+    .rail .rail-sub { display: block; font-size: 12px; }
+    .rail::after {
+      content: "";
+      display: block;
+      width: 22px; height: 1px;
+      background: var(--accent);
+      margin: 12px 0 0 auto;
+    }
+  }
+
+  /* ── masthead ───────────────────────────────────────── */
+  .masthead { padding: 108px 0 0; }
+  .masthead .col > * { animation: rise 900ms cubic-bezier(.16,1,.3,1) backwards; }
+  .masthead .col > *:nth-child(1) { animation-delay: 0ms; }
+  .masthead .col > *:nth-child(2) { animation-delay: 90ms; }
+  .masthead .col > *:nth-child(3) { animation-delay: 170ms; }
+  .masthead .col > *:nth-child(4) { animation-delay: 240ms; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .masthead .col > * { animation: none; }
+  }
+
+  .standfirst {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    color: var(--muted);
+    margin-bottom: 26px;
+  }
+  h1 {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: clamp(34px, 6.2vw, 52px);
+    line-height: 1.18;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    text-wrap: balance;
+    margin-bottom: 22px;
+  }
+  h1 .quiet { color: var(--muted); font-weight: 700; }
+  .deck {
+    font-size: 20px;
+    line-height: 1.75;
+    color: var(--muted);
+    max-width: 30em;
+    text-wrap: pretty;
+    margin-bottom: 34px;
+  }
+  .byline {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    display: flex; flex-wrap: wrap; gap: 0 10px; align-items: baseline;
+    padding-bottom: 34px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .byline .sep { color: var(--rule); }
+
+  /* ── section frame ──────────────────────────────────── */
+  section { padding-top: 96px; }
+  h2 {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 29px;
+    line-height: 1.32;
+    letter-spacing: -0.024em;
+    color: var(--ink);
+    text-wrap: balance;
+    margin-bottom: 12px;
+  }
+  .intro {
+    font-size: 17.5px;
+    color: var(--muted);
+    max-width: 34em;
+    text-wrap: pretty;
+    margin-bottom: 34px;
+  }
+
+  /* ── 1 · the card (only card on the page) ───────────── */
+  .idcard {
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(20,22,27,.04), 0 12px 28px -18px rgba(20,22,27,.28);
+  }
+  .idcard-top {
+    padding: 24px 28px 22px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--wash);
+  }
+  .idcard-top .name {
+    font-family: var(--sans); font-weight: 800; font-size: 22px;
+    letter-spacing: -0.02em; color: var(--ink); display: block;
+  }
+  .idcard-top .alias {
+    font-family: var(--sans); font-size: 13.5px; color: var(--muted); letter-spacing: 0.04em;
+  }
+  .idrow {
+    display: grid;
+    grid-template-columns: 6.5em minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .idrow:last-child { border-bottom: none; }
+  .idrow dt {
+    font-family: var(--sans); font-size: 13.5px; font-weight: 700;
+    color: var(--muted); letter-spacing: 0.03em;
+  }
+  .idrow dd { font-size: 16.5px; line-height: 1.8; color: var(--body); }
+  .items { display: flex; flex-direction: column; gap: 7px; font-family: var(--sans); font-size: 15px; line-height: 1.7; }
+  .items span { position: relative; padding-left: 17px; }
+  .items span::before {
+    content: ""; position: absolute; left: 0; top: 0.62em;
+    width: 5px; height: 5px; border-radius: 50%; background: var(--rule);
+  }
+  .items span.key { color: var(--ink); font-weight: 600; }
+  .items span.key::before { background: var(--accent); }
+
+  /* ── 2 · the spec sheet ─────────────────────────────── */
+  .sheet { border-top: 2px solid var(--ink); }
+  .srow {
+    display: grid;
+    grid-template-columns: 7em minmax(0, 1fr);
+    gap: 24px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .srow > dt {
+    font-family: var(--sans); font-size: 14.5px; font-weight: 700;
+    color: var(--ink); letter-spacing: 0.01em;
+  }
+  .srow > dd { font-size: 16.5px; line-height: 1.85; color: var(--body); }
+  .srow > dd > p { max-width: 34em; }
+  .srow b { color: var(--ink); font-weight: 600; }
+  .srow ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .srow li { position: relative; padding-left: 20px; max-width: 34em; }
+  .srow li::before {
+    content: ""; position: absolute; left: 0; top: 0.78em;
+    width: 9px; height: 1px; background: var(--muted);
+  }
+
+  /* ── 3 · the transcript ─────────────────────────────── */
+  .step {
+    font-family: var(--sans); font-size: 13px; font-weight: 700;
+    letter-spacing: 0.06em; color: var(--muted);
+    display: flex; align-items: center; gap: 12px;
+    margin: 34px 0 14px;
+  }
+  .step::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+  .step:first-child { margin-top: 0; }
+
+  .ask {
+    background: var(--accent-wash);
+    border-radius: 3px;
+    padding: 16px 22px;
+    font-size: 17px;
+    color: var(--ink);
+  }
+  .ask .who { font-family: var(--sans); font-size: 13.5px; font-weight: 700; color: var(--accent); display: block; margin-bottom: 2px; }
+
+  .fields { display: flex; flex-direction: column; gap: 10px; }
+  .fields > div { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 18px; align-items: baseline; }
+  .fields dt { font-family: var(--sans); font-size: 13.5px; font-weight: 700; color: var(--muted); }
+  .fields dd { font-size: 16.5px; line-height: 1.8; }
+
+  .verbatim { display: flex; flex-direction: column; gap: 14px; padding-left: 2px; }
+  .turn { display: grid; grid-template-columns: 5em minmax(0, 1fr); gap: 18px; align-items: baseline; }
+  .turn .spk {
+    font-family: var(--sans); font-size: 13.5px; font-weight: 700;
+    color: var(--ink); text-align: right;
+  }
+  .turn .spk.p { color: var(--accent); }
+  .turn .said { font-size: 16.5px; line-height: 1.85; color: var(--body); }
+  .cut {
+    font-family: var(--sans); font-size: 13px; color: var(--muted);
+    text-align: center; padding-top: 6px;
+  }
+
+  .checks { border-top: 1px solid var(--rule); }
+  .crow {
+    display: grid;
+    grid-template-columns: 1.6em 9.5em minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .crow .mark { color: var(--accent); font-family: var(--sans); font-weight: 700; font-size: 15px; }
+  .crow .q { font-family: var(--sans); font-size: 14.5px; font-weight: 700; color: var(--ink); }
+  .crow .why { font-size: 16px; line-height: 1.8; color: var(--muted); }
+
+  /* ── footer ─────────────────────────────────────────── */
+  footer { padding-top: 72px; }
+  footer .col { border-top: 1px solid var(--rule); padding-top: 28px; }
+  footer p { font-family: var(--sans); font-size: 14px; color: var(--muted); max-width: 38em; }
+  details { margin-top: 16px; font-family: var(--sans); font-size: 13.5px; }
+  summary { cursor: pointer; color: var(--muted); width: fit-content; }
+  summary:hover { color: var(--ink); }
+  details ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); }
+
+  @media (max-width: 620px) {
+    body { font-size: 16.5px; padding: 0 20px 88px; }
+    .masthead { padding-top: 72px; }
+    section { padding-top: 68px; }
+    .idrow, .srow, .fields > div, .turn { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+    .idrow { padding: 20px; }
+    .fields { gap: 22px; }
+    .verbatim { gap: 24px; }
+    .turn .spk { text-align: left; }
+    .crow { grid-template-columns: 1.6em minmax(0, 1fr); }
+    .crow .why { grid-column: 2; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="col">
+    <p class="standfirst">UXR ASSISTANT · 交付文件</p>
+    <h1>三份文件，<br>就能把這個 Agent<br><span class="quiet">交到別人手上</span></h1>
+    <p class="deck">說明卡讓人認識它、指令稿讓人重建它、Demo 讓人驗證它。這是複用一個 Agent 所需的最小集合。</p>
+    <p class="byline">
+      <span>UXR Assistant 工作區</span><span class="sep">/</span>
+      <span>2026-07-29</span><span class="sep">/</span>
+      <span>依 SPEC v1.0 整理</span>
+    </p>
+  </div>
+</header>
+
+<main>
+
+<section id="card">
+  <div class="col">
+    <aside class="rail" aria-hidden="true">
+      <span class="rail-name">說明卡</span>
+      <span class="rail-sub">認識它</span>
+    </aside>
+    <h2>Agent 說明卡</h2>
+    <p class="intro">一分鐘看懂：給誰用、什麼時候用、餵什麼進去、拿什麼出來。</p>
+
+    <div class="idcard">
+      <div class="idcard-top">
+        <span class="name">虛擬訪談助理</span>
+        <span class="alias">UXR Assistant</span>
+      </div>
+      <dl>
+        <div class="idrow">
+          <dt>服務對象</dt>
+          <dd>數位產品設計師是主要操作者；產出的 insight 報告最終給設計團隊與 PM 讀。</dd>
+        </div>
+        <div class="idrow">
+          <dt>使用情境</dt>
+          <dd class="items">
+            <span>要開新研究，從零擬定目標與訪綱</span>
+            <span>還沒有真實受訪者，想先演練分析流程</span>
+            <span>手上有逐字稿，要整理成 insight 報告</span>
+          </dd>
+        </div>
+        <div class="idrow">
+          <dt>需要輸入</dt>
+          <dd class="items">
+            <span>研究主題與脈絡，對話講給它聽</span>
+            <span>或既有規劃素材</span>
+            <span>或逐字稿檔案（txt / md / docx / pdf）</span>
+          </dd>
+        </div>
+        <div class="idrow">
+          <dt>會輸出</dt>
+          <dd class="items">
+            <span class="key">四份規劃素材：目標、招募、電訪與實體訪綱</span>
+            <span class="key">人設卡與模擬逐字稿</span>
+            <span class="key">六段式 insight 報告，引用可回溯</span>
+            <span>每份 md 末尾附五項自檢表</span>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section id="prompt">
+  <div class="col">
+    <aside class="rail" aria-hidden="true">
+      <span class="rail-name">指令稿</span>
+      <span class="rail-sub">重建它</span>
+    </aside>
+    <h2>Agent Prompt／指令稿</h2>
+    <p class="intro">行為的六個構成要素，重點版。完整定義見 <code>CLAUDE.md</code> 與 <code>SPEC.md</code>。</p>
+
+    <dl class="sheet">
+      <div class="srow">
+        <dt>角色設定</dt>
+        <dd><p>懂 UX 研究方法的<b>助理研究員</b>。規劃期是導師、分析期是分析員，中間補上模擬逐字稿的能力。一律台灣繁體中文。</p></dd>
+      </div>
+      <div class="srow">
+        <dt>任務</dt>
+        <dd>
+          <ul>
+            <li><b>開新研究案</b>　產出目標、招募、電訪與實體訪綱四份素材</li>
+            <li><b>模擬逐字稿</b>　人設卡確認後，逐位生成訪談逐字稿</li>
+            <li><b>整理訪談</b>　把逐字稿變成可追溯的 insight 報告</li>
+          </ul>
+        </dd>
+      </div>
+      <div class="srow">
+        <dt>輸入規則</dt>
+        <dd>
+          <ul>
+            <li>一案一資料夾，素材依規劃、逐字稿、報告分三層存放</li>
+            <li>模擬檔加 <code>sim-</code> 前綴，與真實逐字稿<b>嚴禁混放</b></li>
+            <li>分析前先盤點檔案，跟使用者確認分析範圍</li>
+          </ul>
+        </dd>
+      </div>
+      <div class="srow">
+        <dt>輸出格式</dt>
+        <dd>
+          <ul>
+            <li>逐字稿用行首「發言者：」加檔頭 metadata，相容編號腳本</li>
+            <li>報告走六段式結構，每條引用都帶 turn ID</li>
+            <li>每份 md 末尾附<b>五項自檢表</b>，逐字稿資料檔除外</li>
+          </ul>
+        </dd>
+      </div>
+      <div class="srow">
+        <dt>限制條件</dt>
+        <dd>
+          <ul>
+            <li>不碰真實個資，發現疑似個資就停手、提醒去識別化</li>
+            <li>引述不改寫，模擬資料不冒充真實</li>
+            <li>紅旗檢核：🔴 修掉才放行、🟡 留痕放行</li>
+            <li>不主動對外發布或同步</li>
+          </ul>
+        </dd>
+      </div>
+      <div class="srow">
+        <dt>缺資料時</dt>
+        <dd><p>先講清楚<b>缺哪一份、為什麼需要</b>，再提補做路徑。例如要模擬逐字稿卻沒有實體訪綱，就先提醒補做，而不是硬生一份出來。人設卡、分析範圍這類關鍵決定<b>一次只問一個</b>，並附預設選項讓使用者可以直接點頭。</p></dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="col">
+    <aside class="rail" aria-hidden="true">
+      <span class="rail-name">Demo</span>
+      <span class="rail-sub">驗證它</span>
+    </aside>
+    <h2>Demo 範例</h2>
+    <p class="intro">一句指令進去，Agent 先交出可確認的中繼產出，確認過了才往下走。</p>
+
+    <p class="step">使用者輸入</p>
+    <div class="ask">
+      <span class="who">你</span>
+      「模擬逐字稿」——訂閱制取消流程研究案，先來 1 位就好。
+    </div>
+
+    <p class="step">Agent 輸出 · 人設卡</p>
+    <dl class="fields">
+      <div><dt>代號</dt><dd>P1</dd></div>
+      <div><dt>背景</dt><dd>34 歲行銷企劃，同時訂閱 4 個串流與 SaaS 服務，每季檢視一次刷卡明細。</dd></div>
+      <div><dt>行為特徵</dt><dd>取消前會先 Google「如何取消」，曾因為找不到取消入口改打客服。</dd></div>
+      <div><dt>立場</dt><dd>不反對訂閱制，但把「好取消」當成願不願意再訂閱的信任前提。</dd></div>
+    </dl>
+
+    <p class="step">Agent 輸出 · 逐字稿節錄</p>
+    <div class="verbatim">
+      <div class="turn">
+        <span class="spk">研究員</span>
+        <span class="said">可以帶我走一次你上次取消訂閱的過程嗎？</span>
+      </div>
+      <div class="turn">
+        <span class="spk p">P1</span>
+        <span class="said">喔那次……我想一下，應該是去年底吧。就是我先在設定裡找，找不到，欸不對，是先收到扣款通知才想到要取消……</span>
+      </div>
+      <p class="cut">完整逐字稿約 60–90 分鐘規模，存成 <code>sim-P1-20260729.md</code>，檔頭標明【模擬資料】</p>
+    </div>
+
+    <p class="step">自評檢查點</p>
+    <div class="checks">
+      <div class="crow">
+        <span class="mark" aria-hidden="true">✓</span>
+        <span class="q">符合限制</span>
+        <span class="why">檔名前綴、模擬資料聲明、發言者格式都對得上編號腳本，只放模擬資料夾。</span>
+      </div>
+      <div class="crow">
+        <span class="mark" aria-hidden="true">✓</span>
+        <span class="q">有具體建議</span>
+        <span class="why">人設卡與逐字稿可以直接接進「整理訪談」，不是抽象描述。</span>
+      </div>
+      <div class="crow">
+        <span class="mark" aria-hidden="true">✓</span>
+        <span class="q">有理由</span>
+        <span class="why">說明了人設卡為什麼要先行：先鎖定立場分歧，受訪者才不會口徑一致。</span>
+      </div>
+      <div class="crow">
+        <span class="mark" aria-hidden="true">✓</span>
+        <span class="q">沒有過度腦補</span>
+        <span class="why">人設與提問都源自規劃素材，虛構的部分以【模擬資料】明確標示。</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="col">
+    <p>本頁是三份交付文件的重點版。服務總覽見 <code>說明.html</code>，完整規格見 <code>SPEC.md</code>。</p>
+    <details>
+      <summary>本文件自檢表</summary>
+      <ul>
+        <li>☑ 符合限制：內容取自 SPEC v1.0 與 CLAUDE.md，區塊式重點呈現，未引入教學案例</li>
+        <li>☑ 具體建議：三份文件皆可直接複用，說明卡可貼目錄、指令稿可對照維護、Demo 可照做</li>
+        <li>☑ 理由：關鍵設計附原因，如人設卡先行、逐字稿不附自檢表</li>
+        <li>☑ 依據推論：Demo 的研究主題與 P1 內容為虛構示意，已標示；其餘皆有 SPEC 依據</li>
+        <li>☑ 機敏資料：無真實個資、無未去識別化內容</li>
+      </ul>
+    </details>
+  </div>
+</footer>
+
+</body>
+</html>
