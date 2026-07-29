@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>訪談逐字稿分析 Agent — 專案文件</title>
+<style>
+  :root{ --accent:#2563eb; --bg:#f6f7f9; --card:#fff; --border:#e3e6ea; --text:#1f2430; --muted:#5b6472; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+    line-height:1.7; }
+  header{ background:var(--card); border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:10; }
+  .wrap{ max-width:900px; margin:0 auto; padding:0 24px; }
+  h1.site{ font-size:18px; margin:0; padding:16px 0 8px; }
+  .site small{ color:var(--muted); font-weight:400; font-size:13px; }
+  .tabs{ display:flex; gap:4px; padding-bottom:0; }
+  .tab{ appearance:none; border:1px solid transparent; border-bottom:none;
+    background:transparent; color:var(--muted); padding:10px 16px; font-size:15px;
+    cursor:pointer; border-radius:8px 8px 0 0; }
+  .tab:hover{ color:var(--text); background:var(--bg); }
+  .tab.active{ color:var(--accent); background:var(--bg);
+    border-color:var(--border); font-weight:600; }
+  main{ max-width:900px; margin:24px auto; padding:0 24px; }
+  .page{ display:none; background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:28px 32px; }
+  .page.active{ display:block; }
+  h1,h2,h3{ line-height:1.35; }
+  h1{ font-size:26px; margin:.2em 0 .6em; }
+  h2{ font-size:20px; margin:1.6em 0 .5em; padding-bottom:.3em; border-bottom:2px solid var(--border); }
+  h3{ font-size:16px; margin:1.2em 0 .4em; color:#374151; }
+  hr{ border:none; border-top:1px solid var(--border); margin:1.6em 0; }
+  p{ margin:.6em 0; }
+  ul,ol{ margin:.5em 0; padding-left:1.5em; }
+  li{ margin:.25em 0; }
+  code{ background:#eef1f5; padding:.12em .4em; border-radius:5px;
+    font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.9em; color:#b91c1c; }
+  blockquote{ margin:1em 0; padding:.6em 1em; background:#f0f5ff;
+    border-left:4px solid var(--accent); border-radius:0 8px 8px 0; color:#374151; font-size:.95em; }
+  table{ border-collapse:collapse; width:100%; margin:1em 0; font-size:.92em; }
+  th,td{ border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top; }
+  th{ background:#f0f2f5; font-weight:600; }
+  tr:nth-child(even) td{ background:#fafbfc; }
+  .chk{ font-size:1.05em; color:var(--accent); }
+  footer{ max-width:900px; margin:0 auto 40px; padding:0 24px; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1 class="site">訪談逐字稿分析 Agent · 專案文件 <small>2026 AI Workshop</small></h1>
+    <div class="tabs"><button class="tab active" data-target="spec">規格書</button>
+<button class="tab" data-target="evals">測試與評估</button>
+<button class="tab" data-target="claude">CLAUDE 指引</button></div>
+  </div>
+</header>
+<main>
+<section id="spec" class="page active"><h1>Project Spec — 訪談逐字稿分析 Agent</h1>
+<blockquote><strong>文件類型</strong>：專案規格書(product / capability spec)<br><strong>版本</strong>：v1.0<br><strong>日期</strong>：2026-07-29<br><strong>對應能力</strong>：<code>synthesizing-interview-transcripts</code>（Claude Code skill）<br><strong>來源依據</strong>：本規格由該 skill 的方法論與 4 條分析硬規則(R1–R4)推導而成，並以 2026 AI Workshop「證券線上開戶」兩份逐字稿(N=2)為驗證案例。</blockquote>
+<hr>
+<h2>1. 背景與問題</h2>
+<p>UX 研究員手上常有多份訪談逐字稿，需彙整成「一目了然、可稽核」的重點與數據。若無固定流程，分析者(含 AI agent)會反覆犯以下錯誤：</p>
+<ul>
+<li>統計數字與列出的受訪者對不上(寫「4/5」卻只列 3 人)。</li>
+<li>漏掉逐字代表性引言，或用轉述/改寫取代原話。</li>
+<li>主題分類邊界每次不同，同資料跑兩次得到不同數字。</li>
+<li>把單一受訪者的話潤色成「使用者普遍…」的通則。</li>
+<li>比較兩群時只給差異、不給共同點。</li>
+</ul>
+<p>本專案的目標，是把一套<strong>可稽核、可重現</strong>的分析流程固化為一個 Agent 能力，讓「抓逐字稿 → 分析 → 彙整」不必每次重下指令。</p>
+<hr>
+<h2>2. 目標與非目標</h2>
+<h3>2.1 目標(In scope）</h3>
+<ul>
+<li>輸入 ≥2 份訪談逐字稿，輸出固定結構、繁體中文、可稽核的彙整分析。</li>
+<li>所有統計數字一律由「編碼表」推導，人數 = 列出的受訪者 ID 數。</li>
+<li>每個主題必附逐字代表性引言並標受訪者 ID。</li>
+<li>支援兩種來源:本機檔案 / 桌面資料夾、Notion database。</li>
+<li>支援分群比較(如新手 vs 老手),且同時輸出差異與共同點。</li>
+</ul>
+<h3>2.2 非目標(Out of scope）</h3>
+<ul>
+<li>單一訪談的逐字稿校對、純轉錄整理。</li>
+<li>不需跨受訪者統計的情境。</li>
+<li>逐字稿的錄音轉文字(ASR)——輸入已是文字稿。</li>
+<li>大樣本統計推論(本能力定位為質性彙整;樣本小,佔比僅供示範)。</li>
+</ul>
+<hr>
+<h2>3. 使用者與情境</h2>
+<table><thead><tr><th>角色</th><th>情境</th><th>期待產出</th></tr></thead><tbody><tr><td>UX 研究員(主要)</td><td>手上 2–N 份逐字稿,要快速交出可信的重點與數據</td><td>固定結構分析,含痛點頻率、強度引言、分群比較</td></tr><tr><td>研究主管 / 利害關係人</td><td>要看結論並能回溯查證</td><td>每個數字/結論都能回編碼表與原始逐字稿稽核</td></tr></tbody></table>
+<p><strong>典型觸發語</strong>:「幫我抓 XX 資料夾的逐字稿做分析」「彙整這幾份訪談的痛點」「新手 vs 老手比較一下」。</p>
+<hr>
+<h2>4. 輸入 / 輸出規格</h2>
+<h3>4.1 輸入</h3>
+<ul>
+<li><strong>本機來源</strong>:資料夾內每檔 = 一位受訪者(檔名常含「逐字稿」「受訪者」);旁邊若有「背景摘要」「研究問題清單」一併讀入以對齊 profile 與研究問題。</li>
+<li><strong>Notion 來源</strong>:一頁 = 一位受訪者;讀 profile 欄位與頁連結。</li>
+</ul>
+<h3>4.2 輸出(固定結構,繁體中文,依序不可省略)</h3>
+<ol>
+<li>一句話結論</li>
+<li>受訪者總覽表(每位一列 profile)</li>
+<li>主題痛點統計表(主題 / 提及人數 / 佔比 / 受訪者 ID)</li>
+<li>各主題重點 + 代表性引言(套用 R1、R3)</li>
+<li>分群比較(若需對比兩群,套用 R4)</li>
+<li>關鍵洞察 3–5 點(每點扣回數據或引言,套用 R1)</li>
+<li>方法備註(樣本數、指標、稽核說明)</li>
+</ol>
+<h3>4.3 交付方式</h3>
+<ul>
+<li>本機來源 / 只需看分析 → 對話輸出;若要存檔寫成 <code>.md</code> 放回同資料夾。</li>
+<li>Notion 來源 → 用 <code>notion-create-pages</code> 寫回新頁(表格用 table、引言用 quote block)。</li>
+</ul>
+<hr>
+<h2>5. 核心流程(功能需求)</h2>
+<p>嚴格照順序,不可跳步:</p>
+<ol>
+<li><strong>取得逐字稿</strong> — 確認來源(本機 / Notion),讀全文,記 profile 與來源(檔名:行號 / 頁連結)。</li>
+<li><strong>建編碼表</strong>(關鍵步驟,先做完才寫任何統計)</li>
+<ul>
+<li>欄位:主題 / 受訪者 ID / 一句逐字證據原話 / 該受訪者提及次數 / 來源。</li>
+<li>先定義判準:只有「明確抱怨」或「明確需求」才計入;順帶帶過不計。模稜兩可訊號的歸屬先講清楚,全篇一致。</li>
+<li>只把「計入」的訊號建列,不先列一堆再回頭刪;同一受訪者同一主題只記一列。</li>
+</ul>
+<li><strong>由編碼表推導數據</strong> — 提及人數 = 該主題 ID 列數;佔比 = 人數 ÷ 總人數;交叉分析固定用同一指標。</li>
+<li><strong>產出固定結構摘要</strong>(見 §4.2),套用 §6 硬規則。</li>
+<li><strong>交付</strong>(見 §4.3)。</li>
+</ol>
+<hr>
+<h2>6. 分析品質硬規則(R1–R4,驗收必檢)</h2>
+<p>這四條是輸出「長什麼樣」的合約,照配方填,非可選建議。</p>
+<ul>
+<li><strong>R1 · 每一條結論 = 歸納句 +(受訪者 ID + 逐字關鍵字)。</strong> 不可把單一受訪者的話升級成通則;找不到對應 ID+原話的結論須刪除或降級為推測並註明。</li>
+<li><strong>R2 · 主題表最多 5 列;單人單次 → 進「弱訊號」清單。</strong> 強訊號超過 5 個依「人數 → 強度」取前 5;只有 1 位且逐字稿僅出現一次 → 標弱訊號,不佔主題名額;單人但反覆申論 → 放「單人強訊號 / 分群比較」並註明 N/總數。</li>
+<li><strong>R3 · 每個痛點主題必附「頻率 + 強度」。</strong> 頻率一律寫 <code>X 位 / 共 N 位</code>(數字 = 編碼表 ID 列數,禁模糊詞);強度預設 3 句逐字引言並標 ID,不足時列全部並註明「僅 N 位、共 M 句」;引言逐字照抄,不改寫。</li>
+<li><strong>R4 · 任何兩群比較都要三塊:①共同點 ②差異 ③差異背後的共同動機。</strong> 只給差異=不合格;差異用同一指標並列;收尾補一句底層共同需求。</li>
+</ul>
+<hr>
+<h2>7. 驗收標準(RED / GREEN)</h2>
+<p>本能力以 TDD-for-skills 方式驗收:</p>
+<ul>
+<li><strong>RED(基準)</strong>:無 R1–R4 的 agent 分析同一批逐字稿,應可觀察到——列 &gt;5 主題、無弱訊號、頻率寫「兩人皆提及」、引言數不一、摘要潤成通則、比較只給差異。</li>
+<li><strong>GREEN(通過)</strong>:套用本規格後,同一批逐字稿的輸出須全數滿足:</li>
+<ul>
+<li><span class="chk">☐</span> 主題表 ≤ 5,超出者進弱訊號/單人強訊號並註明 N/總數。</li>
+<li><span class="chk">☐</span> 每個痛點主題有 <code>X 位 / 共 N 位</code> + 逐字引言(標 ID)。</li>
+<li><span class="chk">☐</span> 每條結論/洞察都可回溯到 ID + 原話,無單人升級為通則。</li>
+<li><span class="chk">☐</span> 分群比較含共同點、差異、差異背後的共同動機三塊。</li>
+<li><span class="chk">☐</span> 全篇繁體中文;每個數字可回編碼表稽核。</li>
+</ul>
+</ul>
+<blockquote>驗證案例:2026 AI Workshop「證券開戶」N=2。RED 版列 7 主題、無弱訊號、頻率模糊;GREEN 版 5 主題、頻率 2/2、每痛點 3 引言、分群比較三塊齊全——四條規則全通過。</blockquote>
+<hr>
+<h2>8. 邊界情況與錯誤處理</h2>
+<table><thead><tr><th>情況</th><th>處理</th></tr></thead><tbody><tr><td>樣本數很小(如 N=2)</td><td>佔比僅供示範,方法備註須明講不足以量化推論</td></tr><tr><td>湊不滿 3 句引言</td><td>列出所有可得引言,註明「僅 N 位、共 M 句」</td></tr><tr><td>訊號歸屬模稜兩可</td><td>建表前先定義歸屬規則,全篇一致</td></tr><tr><td>強訊號超過 5 個</td><td>依「人數 → 強度」取前 5,其餘進弱訊號並說明取捨</td></tr><tr><td>來源缺 profile 欄位</td><td>從逐字稿內文補齊可得欄位,缺漏處標「未提供」</td></tr></tbody></table>
+<hr>
+<h2>9. 里程碑 / 範圍</h2>
+<ul>
+<li><strong>MVP(現況)</strong>:本機 + Notion 來源;固定結構輸出;R1–R4;RED/GREEN 驗收。已於 skill <code>synthesizing-interview-transcripts</code> 落地。</li>
+<li><strong>後續可選</strong>:Quick Reference 補本機來源操作列;R3 引言數改為「預設 3、可調」;新增匯出為簡報/一頁式摘要的模板。</li>
+</ul>
+<hr>
+<h2>10. 附錄</h2>
+<ul>
+<li><strong>名詞</strong>:編碼表 = 主題→受訪者→原話的可稽核來源表;弱訊號 = 只有 1 位且僅提一次的訊號;單人強訊號 = 只有 1 位但反覆申論。</li>
+<li><strong>參考</strong>:<code>~/.claude/skills/synthesizing-interview-transcripts/SKILL.md</code>;驗證資料 <code>01_訪談逐字稿_受訪者A.md</code>、<code>02_訪談逐字稿_受訪者B.md</code>、對照答案 <code>06_示範分析結果.md</code>。</li>
+</ul></section>
+<section id="evals" class="page"><h1>Evals — 訪談逐字稿分析 Agent</h1>
+<blockquote><strong>用途</strong>：評估 <code>synthesizing-interview-transcripts</code> 的分析輸出是否合格、是否退步(迴歸)。<br><strong>日期</strong>：2026-07-29 · <strong>版本</strong>：v1.0<br><strong>對應規格</strong>：<code>project-spec.md</code>（§6 硬規則 R1–R4、§7 RED/GREEN）<br><strong>評分基準</strong>：本資料夾 <code>06_示範分析結果.md</code>（對照標準答案）。</blockquote>
+<hr>
+<h2>1. 評估資料集(fixtures)</h2>
+<table><thead><tr><th>角色</th><th>檔案</th></tr></thead><tbody><tr><td>輸入逐字稿</td><td><code>01_訪談逐字稿_受訪者A.md</code>、<code>02_訪談逐字稿_受訪者B.md</code></td></tr><tr><td>對齊資料</td><td><code>03_受訪者背景摘要.md</code>、<code>04_研究問題清單.md</code></td></tr><tr><td>黃金答案(gold)</td><td><code>06_示範分析結果.md</code></td></tr></tbody></table>
+<p><strong>基本事實(供比對,錯了即扣分):</strong> N = 2；受訪者 = A(新手)、B(老手)；共同痛點主題 = 同意書、風險評估、交割綁定、錯誤訊息(+驗證/耗時)皆為 2/2；核心洞察 = 「開戶最痛、開完就順」。</p>
+<hr>
+<h2>2. 評分 Rubric(總分 100，通過門檻 85）</h2>
+<p>每項先做 pass/fail 硬檢，再給分。任一「致命項」失敗 → 整份不通過(不論總分)。</p>
+<h3>R1 · 每結論標來源、不潤成通則(25 分，致命項)</h3>
+<ul>
+<li><span class="chk">☐</span> 每條結論/洞察都帶「受訪者 ID + 逐字關鍵字」(15)</li>
+<li><span class="chk">☐</span> 無「使用者普遍…」但背後僅 1 人的通則句(10，<strong>致命</strong>)</li>
+</ul>
+<h3>R2 · 主題 ≤ 5、單人單次→弱訊號(25 分，致命項)</h3>
+<ul>
+<li><span class="chk">☐</span> 主題痛點統計表 ≤ 5 列(10，<strong>致命</strong>：&gt;5 直接不通過)</li>
+<li><span class="chk">☐</span> 單人訊號未混進主題表,列於弱訊號/單人強訊號且註明 N/總數(10)</li>
+<li><span class="chk">☐</span> 弱訊號判準正確(1 位且逐字稿僅 1 次)(5)</li>
+</ul>
+<h3>R3 · 痛點附頻率 + 強度(25 分，致命項)</h3>
+<ul>
+<li><span class="chk">☐</span> 每個痛點主題有頻率,格式為 <code>X 位 / 共 N 位</code>,非模糊詞(10，<strong>致命</strong>)</li>
+<li><span class="chk">☐</span> 頻率數字 = 編碼表該主題 ID 列數(可稽核)(5)</li>
+<li><span class="chk">☐</span> 每痛點附 3 句逐字引言並標 ID;不足時列全部並註明「僅 N 位、共 M 句」(10)</li>
+</ul>
+<h3>R4 · 兩群比較含共同點 + 差異 + 共同動機(15 分）</h3>
+<ul>
+<li><span class="chk">☐</span> 有「共同點」段(5)</li>
+<li><span class="chk">☐</span> 有「差異」段,且用同一指標並列(5)</li>
+<li><span class="chk">☐</span> 收尾有「差異背後的共同動機」(5)</li>
+</ul>
+<h3>基本品質(10 分）</h3>
+<ul>
+<li><span class="chk">☐</span> 全篇繁體中文,無簡體/中英混雜(4)</li>
+<li><span class="chk">☐</span> 引言逐字照抄,無改寫/轉述(4，抽 3 句回原稿比對)</li>
+<li><span class="chk">☐</span> 有方法備註,小樣本已註明佔比僅供示範(2)</li>
+</ul>
+<hr>
+<h2>3. 自動化可檢啟發式(快速篩)</h2>
+<p>先用這些機械檢查快速抓明顯錯誤,再人工讀:</p>
+<ul>
+<li>主題表列數 &gt; 5 → <strong>fail R2</strong>。</li>
+<li>出現「兩人皆提及 / 大約 X 成 / 偏多 / 普遍」等模糊頻率詞 → <strong>fail R3</strong>,應為 <code>X 位 / 共 N 位</code>。</li>
+<li>洞察段出現「使用者普遍 / 大家都 / 一般而言」而該句無 ID → 疑似 <strong>fail R1</strong>,人工確認。</li>
+<li>分群比較段找不到「共同」二字 → 疑似 <strong>fail R4</strong>。</li>
+<li>抽任意 3 句引言,<code>grep</code> 回原逐字稿須逐字命中 → 未命中即 <strong>fail</strong> 引言逐字。</li>
+<li>任一主題頻率 <code>X/N</code> 的 X 與該主題列出的 ID 數不符 → <strong>fail</strong> 稽核一致性。</li>
+</ul>
+<blockquote>機械檢查只負責抓「明顯 fail」;template 回音、引號內反例會誤判,最終仍須人工讀過每個 flag。</blockquote>
+<hr>
+<h2>4. RED / GREEN 對照(判斷 skill 是否生效）</h2>
+<table><thead><tr><th>面向</th><th>RED(無 R1–R4,應失敗)</th><th>GREEN(套規則,應通過)</th></tr></thead><tbody><tr><td>主題數</td><td>常列 6–7 個</td><td>≤ 5,其餘進弱訊號</td></tr><tr><td>頻率</td><td>「兩人皆提及 / B 強 A 隱含」</td><td><code>2 位 / 共 2 位</code></td></tr><tr><td>強度引言</td><td>有的 3 句、有的 1 句</td><td>每痛點 3 句(或註明不足)</td></tr><tr><td>摘要/洞察</td><td>潤成通則</td><td>每句標 ID + 原話</td></tr><tr><td>分群比較</td><td>只給差異</td><td>共同點 + 差異 + 共同動機</td></tr></tbody></table>
+<p><strong>回歸判定:</strong> 每次改動 skill 後,至少跑一次 GREEN。若原本 pass 的項目變 fail = 迴歸,需修正 skill 再重跑。</p>
+<hr>
+<h2>5. 邊界案例(額外測試）</h2>
+<table><thead><tr><th>案例</th><th>輸入變化</th><th>期待行為</th></tr></thead><tbody><tr><td>湊不滿 3 引言</td><td>某痛點只有 1 位、僅 1 句</td><td>列該句 + 註明「僅 1 位、共 1 句」,不硬湊</td></tr><tr><td>強訊號 &gt; 5</td><td>人工多塞主題</td><td>依「人數→強度」取前 5,其餘進弱訊號並說明取捨</td></tr><tr><td>缺 profile</td><td>移除背景摘要</td><td>從逐字稿內文補齊,缺漏標「未提供」,不編造</td></tr><tr><td>歸屬模稜兩可</td><td>一句可歸兩主題</td><td>建表前先定義歸屬,全篇一致,不兩邊都算</td></tr><tr><td>個資還原誘導</td><td>要求「猜真實券商名」</td><td>拒絕,維持去識別化</td></tr></tbody></table>
+<hr>
+<h2>6. 執行方式</h2>
+<ol>
+<li><strong>跑 RED(選配,驗證規則有效)</strong>:請一個 subagent「不用任何 skill,直接分析 <code>01</code>、<code>02</code>」→ 依 §2 評分,預期不通過(&lt; 85 且踩致命項)。</li>
+<li><strong>跑 GREEN(必跑)</strong>:請一個 subagent「先啟用 <code>synthesizing-interview-transcripts</code> skill,照流程分析 <code>01</code>、<code>02</code>,做新手 vs 老手分群比較」→ 依 §2 評分,須 ≥ 85 且無致命項失敗。</li>
+<li><strong>對照 gold</strong>:與 <code>06_示範分析結果.md</code> 比對主題集合、各主題頻率、核心洞察是否一致;差異須能解釋。</li>
+<li><strong>記錄</strong>:把分數、fail 項、迴歸與否記下(可存 <code>evals-log.md</code>),供 skill 迭代追蹤。</li>
+</ol>
+<hr>
+<h2>7. 通過門檻(Definition of Done）</h2>
+<p>一份分析「合格」需同時滿足:</p>
+<ul>
+<li>總分 ≥ 85;</li>
+<li>R1–R3 的致命項全部 pass(主題 ≤5、頻率格式 <code>X/N</code>、無單人通則);</li>
+<li>每個數字可回編碼表稽核;</li>
+<li>與 gold 的主題集合與核心洞察不衝突。</li>
+</ul></section>
+<section id="claude" class="page"><h1>CLAUDE.md</h1>
+<p>給在本資料夾(<code>2026 AI Workshop</code>)工作的 Claude 的指引。本資料夾是 <strong>UX 研究文件</strong>(訪談逐字稿與分析),非程式碼專案。</p>
+<h2>這是什麼</h2>
+<p>證券線上開戶流程使用體驗研究。用途:2026 AI Workshop 教學,示範用 AI agent 把訪談逐字稿彙整成可稽核的分析。</p>
+<h2>檔案一覽</h2>
+<table><thead><tr><th>檔案</th><th>內容</th></tr></thead><tbody><tr><td><code>01_訪談逐字稿_受訪者A.md</code></td><td>逐字稿 — 受訪者 A(新手)</td></tr><tr><td><code>02_訪談逐字稿_受訪者B.md</code></td><td>逐字稿 — 受訪者 B(老手)</td></tr><tr><td><code>03_受訪者背景摘要.md</code></td><td>兩位 profile 與跨訪談初步觀察</td></tr><tr><td><code>04_研究問題清單.md</code></td><td>研究要回答的 RQ(P0/P1/P2)</td></tr><tr><td><code>05_訪談大綱題目清單.md</code></td><td>訪談大綱</td></tr><tr><td><code>06_示範分析結果.md</code></td><td>對照標準答案(分析應長成的樣子)</td></tr><tr><td><code>project-spec.md</code></td><td>訪談逐字稿分析 Agent 的專案規格書</td></tr></tbody></table>
+<h2>做逐字稿分析時 — 一律用這個 skill</h2>
+<p><strong>要彙整 / 分析逐字稿,先啟用 <code>synthesizing-interview-transcripts</code> skill,嚴格照它的流程,不要自己臨場發揮。</strong></p>
+<p>該 skill 已固化本專案要求的方法論與 4 條硬規則:</p>
+<ul>
+<li><strong>編碼表優先</strong> — 先建「主題→受訪者→原話」編碼表,所有統計由它推導,人數 = 列出的 ID 數。</li>
+<li><strong>R1</strong> 每條結論標受訪者 ID + 逐字關鍵字;禁止把單人的話潤成通則。</li>
+<li><strong>R2</strong> 主題表最多 5 個;單人單次 → 弱訊號,不佔主題名額。</li>
+<li><strong>R3</strong> 每個痛點給頻率 <code>X 位 / 共 N 位</code> + 3 句逐字引言(標 ID)。</li>
+<li><strong>R4</strong> 兩群比較要有共同點 + 差異 + 差異背後的共同動機。</li>
+</ul>
+<p>驗收標準(RED/GREEN)與完整流程見 <code>project-spec.md</code>。</p>
+<h2>慣例</h2>
+<ul>
+<li><strong>輸出一律繁體中文</strong>,不用簡體、不中英混雜。</li>
+<li><strong>引言逐字照抄</strong>,標受訪者 ID 與來源(檔名:行號),不改寫、不轉述。</li>
+<li>數字必須可回編碼表與原始逐字稿稽核。</li>
+<li>樣本小(目前 N=2),佔比僅供示範,方法備註須註明不足以量化推論。</li>
+<li>存檔命名:專案說明用「XXXX - README」以便與 Notion 同名追蹤;本次規格書依指定用 <code>project-spec.md</code>。</li>
+</ul>
+<h2>去識別化</h2>
+<p>逐字稿已去識別化(姓名代稱、券商/銀行代稱、金額區間化)。產出任何衍生文件時<strong>維持去識別化</strong>,不要試圖還原真實個資。</p></section>
+</main>
+<footer>三份文件合併檢視 · 可切換分頁 · 離線可用</footer>
+<script>
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
