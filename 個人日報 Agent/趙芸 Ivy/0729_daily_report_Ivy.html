@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>每日進度報告 2026-07-29</title>
+<style>
+  :root {
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --ink: #23211d;
+    --ink-2: #5f5a52;
+    --ink-3: #8d867c;
+    --rule: #e5e1d8;
+    --accent: #7a6a4f;
+    --tag-bg: #f0ece2;
+    --tag-ink: #6b6255;
+    --warn: #8a5a2b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171614;
+      --surface: #1f1e1b;
+      --ink: #eceae4;
+      --ink-2: #b3ada2;
+      --ink-3: #857f75;
+      --rule: #33312c;
+      --accent: #c4ad82;
+      --tag-bg: #2b2924;
+      --tag-ink: #b3ada2;
+      --warn: #d2a06a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171614;
+    --surface: #1f1e1b;
+    --ink: #eceae4;
+    --ink-2: #b3ada2;
+    --ink-3: #857f75;
+    --rule: #33312c;
+    --accent: #c4ad82;
+    --tag-bg: #2b2924;
+    --tag-ink: #b3ada2;
+    --warn: #d2a06a;
+  }
+  :root[data-theme="light"] {
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --ink: #23211d;
+    --ink-2: #5f5a52;
+    --ink-3: #8d867c;
+    --rule: #e5e1d8;
+    --accent: #7a6a4f;
+    --tag-bg: #f0ece2;
+    --tag-ink: #6b6255;
+    --warn: #8a5a2b;
+  }
+
+  body {
+    margin: 0;
+    padding: 2.5rem 1.25rem 4rem;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans TC", "PingFang TC", "Heiti TC", -apple-system,
+      BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header { margin-bottom: 2.75rem; }
+  .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 0.5rem;
+  }
+  h1 {
+    font-size: 1.55rem;
+    line-height: 1.35;
+    margin: 0 0 0.9rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .summary {
+    margin: 0;
+    font-size: 1.02rem;
+    color: var(--ink-2);
+    border-left: 3px solid var(--accent);
+    padding-left: 0.9rem;
+  }
+
+  section { margin-bottom: 2.5rem; }
+  h2 {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 650;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  ul { list-style: none; margin: 0; padding: 0; }
+  li {
+    position: relative;
+    padding: 0.55rem 0 0.55rem 1.35rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  li:last-child { border-bottom: none; }
+  li::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 1.28rem;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .src {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.08rem 0.42rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    background: var(--tag-bg);
+    color: var(--tag-ink);
+    border-radius: 3px;
+    white-space: nowrap;
+    vertical-align: 0.08em;
+  }
+  .todo {
+    color: var(--warn);
+    font-weight: 600;
+  }
+  .status {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--ink-3);
+    margin-top: 0.1rem;
+  }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.78rem;
+    color: var(--ink-3);
+  }
+  footer p { margin: 0.3rem 0; }
+
+  @media print {
+    body { background: #fff; color: #000; padding: 0; font-size: 11pt; }
+    .wrap { max-width: none; }
+    section { break-inside: avoid; page-break-inside: avoid; }
+    .src { border: 1px solid #bbb; background: none; }
+    li::before { background: #000; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">每日進度報告</p>
+    <h1>2026 年 7 月 29 日（週三）</h1>
+    <p class="summary">
+      今天工作幾乎全在 AI 工具中進行，完成三件事：公司 AI 工作坊的飲食紀錄 App 實作、一套元件開發用的輔助工具與規範文件、以及一套每日進度報告系統，含規格、產出工具、工作日誌輸入區、自動提醒與版本控制。
+    </p>
+  </header>
+
+  <section>
+    <h2>今天完成的事</h2>
+    <ul>
+      <li>在公司 AI 工作坊實作飲食紀錄 App，調整配色解決文字與背景對比不足、看不清楚的問題。<span class="src">[AI]</span></li>
+      <li>把該 App 輸入框的 placeholder 改為「今天想怎麼吃」，簡化引導文案。<span class="src">[AI]</span></li>
+      <li>上述調整動到樣式、腳本、頁面三個檔案，每次改動後都跑語法檢查與查詢測試確認沒壞。<span class="src">[AI]</span></li>
+      <li>先讀過內部元件庫既有的 token 結構、元件檔案組成與雙平台處理方式，再據此建立元件開發輔助 skill，避免規範與現況脫節。<span class="src">[AI]</span></li>
+      <li>該 skill 產出操作說明與慣例文件共 644 行、三支 Python 檢查腳本共 823 行，合計 1,467 行。<span class="src">[AI]</span></li>
+      <li>依需求補上設計稿與元件實作在 padding、尺寸上的一致性檢查，iOS 與 Android 雙平台都納入驗證。<span class="src">[AI]</span></li>
+      <li>三支腳本通過語法編譯檢查，並在六個既有元件上試跑確認可執行。<span class="src">[AI]</span></li>
+      <li>撰寫每日進度報告規格，定義四段格式、來源標記、機敏資訊遮蔽規則、驗收清單與執行流程。<span class="src">[AI]</span></li>
+      <li>串接團隊看板的讀取管道，確認可用負責人 ID 精準篩出自己名下的 23 張卡片，避免誤抓到他人項目。<span class="src">[AI]</span> <span class="src">[Miro]</span></li>
+      <li>確認看板卡片顏色可對應工作類型、項目編號可區分交辦與自主發起，兩者都納入規格。<span class="src">[Miro]</span></li>
+      <li>建立看板卡片快照比對工具，以合成資料驗證新增卡、勾選項目、標題改動、卡片消失四種異動皆可偵測，並產出今日基準快照。<span class="src">[AI]</span> <span class="src">[Miro]</span></li>
+      <li>報告改為同時產出 Markdown 文字正本與 HTML 呈現版，並加入條目數比對，確保兩份內容不會隨時間走鐘。<span class="src">[AI]</span></li>
+      <li>建立歸檔索引工具，掃描歷史報告產生可點閱清單，缺檔會明確標示而非靜默略過。<span class="src">[AI]</span></li>
+      <li>建立本地版本控制，把規格工具與每日報告分開提交，方便日後回頭追查規格為何演變。<span class="src">[AI]</span></li>
+      <li>加上推送阻擋機制，避免含未遮蔽原始依據的內容被意外推上遠端。<span class="src">[AI]</span></li>
+      <li>完成規格第二版，新增工作日誌輸入區作為資料來源，並移除原規劃中授權範圍過大、不適用的一項來源。<span class="src">[AI]</span></li>
+      <li>實作工作日誌的本地伺服器與網頁，兩個輸入區在停止打字約一秒後自動存檔，只綁本機不對外開放。<span class="src">[AI]</span></li>
+      <li>該伺服器通過端對端測試，路徑穿越與不存在的日期都會被擋下。<span class="src">[AI]</span></li>
+      <li>新增「不寫生活閒聊」的撰寫規則，列出六類不寫，並保留兩個仍須記錄的例外。<span class="src">[AI]</span></li>
+      <li>設定平日 17:00 自動提醒，會自動啟動工作日誌伺服器並跳出對話框，當日實測成功。<span class="src">[AI]</span></li>
+      <li>檢查並整理版本控制的忽略規則，補上暫存檔與執行狀態，並在檔案內註明每條規則的存在理由。<span class="src">[AI]</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>遇到的問題與卡點</h2>
+    <ul>
+      <li><strong>團隊看板的 API 讀不到日期與看板欄位</strong>，無法單獨判斷哪些卡片是當天處理的。
+        <span class="status">狀態：已解 — 改用每日快照比對繞過；但卡片單純被拖到完成欄仍偵測不到，此情況需靠其他來源佐證。<span class="src">[Miro]</span></span></li>
+      <li><strong>原規劃的一項訊息來源授權範圍過大，且無法跨工作區檢視</strong>，不適合納入。
+        <span class="status">狀態：已解 — 不採用，改以自建的工作日誌輸入區替代，資料完全留在本機。<span class="src">[AI]</span></span></li>
+      <li><strong>首份報告只涵蓋到中午</strong>，下午的產出未納入，直到重新產生時才補齊。
+        <span class="status">狀態：已解 — 已在執行流程加入「產出前確認涵蓋範圍到當下」的檢查。<span class="src">[AI]</span></span></li>
+      <li><strong>今日為快照建立首日</strong>，只有一份基準快照，看板來源今天沒有差異可比對。
+        <span class="status">狀態：預期內 — 明日起才有比對結果。<span class="src">[Miro]</span></span></li>
+      <li><strong>元件開發 skill 已完成並通過語法檢查，但尚未從頭到尾套用在一個真實元件上完整跑過一次</strong>，實際效果未經驗證。
+        <span class="status">狀態：未解。<span class="src">[AI]</span></span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>明天的計畫</h2>
+    <ul>
+      <li>取得第二份看板快照，實際跑一次差異比對，驗證機制在真實資料上可用。<span class="src">[Miro]</span></li>
+      <li>開始使用工作日誌輸入區記錄，累積第二天資料。<span class="src">[AI]</span></li>
+      <li>逐一確認 14 張設計卡片屬於交辦或自主發起，補進結構化紀錄的對應欄位。<span class="src">[AI]</span></li>
+      <li>補齊自評所需的分類維度，在結構化紀錄中加入對應欄位。<span class="src">[AI]</span></li>
+      <li><strong><span class="todo">待補</span></strong>：今日紀錄中沒有明日行程或會議安排的資訊，其餘計畫無法從既有資料推得。</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>來源標記：[AI] 為 AI 對話工作紀錄、[Miro] 為團隊看板、[工作日誌] 為本人手動記錄。</p>
+    <p>本報告僅採計當日有實際產出落地的工作；純探索與被推翻的方案不列入完成事項。</p>
+  </footer>
+
+</div>
+</body>
+</html>
