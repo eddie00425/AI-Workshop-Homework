@@ -1,0 +1,29 @@
+{
+  "timezone": "Asia/Taipei",
+  "notion": {
+    "board_url": "待補"
+  },
+  "slack": {
+    "self_user_id": "待補",
+    "workspace_url": "https://your-workspace.slack.com",
+    "channels": [
+      {
+        "name": "待補",
+        "id": "待補",
+        "type": "private"
+      }
+    ],
+    "history_limit": 15,
+    "max_pages_per_channel": 1
+  },
+  "ai_sessions": {
+    "codex_log_paths": ["待補"],
+    "claude_code_log_paths": ["待補"]
+  },
+  "redaction": {
+    "terms": ["待補"]
+  },
+  "output": {
+    "reports_dir": "daily_report/reports"
+  }
+}

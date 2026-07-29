@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>每日進度報告｜2026-07-29</title>
+  <style>
+    :root {
+      --paper: #f7f5ef;
+      --surface: #fffdf7;
+      --ink: #20241f;
+      --muted: #626a60;
+      --line: #d9d4c8;
+      --complete: #2f6f4e;
+      --issue: #9a5b1f;
+      --plan: #315f8f;
+      --evidence: #4e5661;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.65;
+    }
+
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+    }
+
+    .date {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .summary {
+      max-width: 74ch;
+      margin: 18px 0 0;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .section {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 28px;
+      border-top: 1px solid var(--line);
+      padding: 26px 0;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .section.completed h2 { color: var(--complete); }
+    .section.blockers h2 { color: var(--issue); }
+    .section.tomorrow h2 { color: var(--plan); }
+
+    .workstream {
+      padding: 0 0 18px;
+      margin: 0 0 18px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .workstream:last-child {
+      margin-bottom: 0;
+      border-bottom: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: 0 5px 18px rgba(32, 36, 31, 0.08);
+      margin: 0 0 10px;
+      padding: 13px 14px 12px;
+    }
+
+    li p {
+      margin: 0;
+      max-width: 75ch;
+    }
+
+    .evidence {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      border-radius: 6px;
+      background: #eef0eb;
+      color: var(--evidence);
+      padding: 2px 7px;
+      font-size: 12px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .chip.muted {
+      font-weight: 600;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 5px 18px rgba(32, 36, 31, 0.08);
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 750;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    a {
+      color: var(--plan);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 24px, 680px);
+        padding-top: 28px;
+      }
+
+      .section {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+
+    @media print {
+      body { background: white; }
+      main { width: 100%; padding: 0; }
+      li, table { box-shadow: none; border: 1px solid var(--line); }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="date">2026-07-29</p>
+      <h1>每日進度報告</h1>
+      <p class="summary">今天完成每日進度報告 Agent 的執行規格與輸出骨架。</p>
+    </header>
+
+    <section class="section completed">
+      <h2>今天完成的事</h2>
+      <div>
+        
+            <section class="workstream">
+              <h3>Daily Report Agent</h3>
+              <ul>
+      <li>
+        <p>完成每日進度報告 Agent 的規格、提示詞與 evidence schema，讓後續資料來源能用同一格式接入。</p>
+        <div class="evidence"><span class="chip" title="notion｜2026-07-29T17:20:00+08:00｜每日進度報告 Agent">notion:card:daily-report-agent</span></div>
+      </li>
+    
+
+      <li>
+        <p>完成 Markdown 與 HTML 產生器，並加入 evidence id 驗證以避免輸出沒有來源的工作項目。</p>
+        <div class="evidence"><span class="chip" title="codex｜2026-07-29T17:35:00+08:00｜Codex session: daily_report">ai:codex:daily-report-design</span></div>
+      </li>
+    </ul>
+            </section>
+            
+      </div>
+    </section>
+
+    <section class="section blockers">
+      <h2>遇到的問題與卡點</h2>
+      <ul>
+      <li>
+        <p>Slack channel 名稱與 AI session log 實際路徑尚未補齊。</p>
+        <div class="evidence"><span class="chip" title="slack｜2026-07-29T17:45:00+08:00｜#daily-report">slack:daily-report:plan</span></div>
+      </li>
+    </ul>
+    </section>
+
+    <section class="section tomorrow">
+      <h2>明天的計劃</h2>
+      <ul>
+      <li>
+        <p>補齊 Slack 頻道、本人 user id 與 AI session log 路徑後，開始實作資料收集器。</p>
+        <div class="evidence"><span class="chip" title="slack｜2026-07-29T17:45:00+08:00｜#daily-report">slack:daily-report:plan</span></div>
+      </li>
+    </ul>
+    </section>
+
+    <section class="section">
+      <h2>可以新增的內容</h2>
+      <ul>
+        <li>
+          <p><strong>來源信心等級</strong>：建議未來替每個報告項目加上來源信心等級，區分明確完成、推測完成與待補確認。</p>
+          <div class="evidence"><span class="chip" title="codex｜2026-07-29T17:35:00+08:00｜Codex session: daily_report">ai:codex:daily-report-design</span></div>
+        </li>
+        </ul>
+    </section>
+
+    <section class="section">
+      <h2>來源索引</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Evidence ID</th>
+            <th>來源</th>
+            <th>時間</th>
+            <th>標題</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <td><code>ai:codex:daily-report-design</code></td>
+              <td>codex</td>
+              <td>2026-07-29T17:35:00+08:00</td>
+              <td>Codex session: daily_report</td>
+            </tr>
+            
+            <tr>
+              <td><code>notion:card:daily-report-agent</code></td>
+              <td>notion</td>
+              <td>2026-07-29T17:20:00+08:00</td>
+              <td>每日進度報告 Agent</td>
+            </tr>
+            
+            <tr>
+              <td><code>slack:daily-report:plan</code></td>
+              <td>slack</td>
+              <td>2026-07-29T17:45:00+08:00</td>
+              <td>#daily-report</td>
+            </tr>
+            </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

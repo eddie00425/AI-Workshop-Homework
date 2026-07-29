@@ -1,0 +1,3 @@
+{"source_type":"manual","timestamp":"2026-07-29T18:00:00+08:00","title":"Slack 權限狀態","text":"Slack app 尚未拿到 workspace 安裝權限，暫時無法用 API 讀取 Cathay Web 訊息。","work_related":true}
+{"source_type":"manual","timestamp":"2026-07-29T18:05:00+08:00","title":"Daily Report Agent 下一步","text":"權限核准前先建立手動 evidence 匯入流程，讓日報格式與輸出管線可以先驗證。","work_related":true}
+
