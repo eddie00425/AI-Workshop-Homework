@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作日報 · AI Gen Figma</title>
+<style>
+  :root{
+    --bg: #f4f5f2;
+    --surface: #ffffff;
+    --ink: #1c201d;
+    --muted: #6b726d;
+    --line: #e1e4de;
+    --accent: #3454d1;
+    --accent-soft: #eef1fc;
+    --code-bg: #edefea;
+    --err: #b3402f;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg: #14161a;
+      --surface: #1b1e22;
+      --ink: #e6e8e3;
+      --muted: #9aa39d;
+      --line: #2a2e2b;
+      --accent: #8fa4ff;
+      --accent-soft: rgba(143,164,255,0.12);
+      --code-bg: #20232a;
+      --err: #e08a76;
+    }
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Heiti TC", "Microsoft JhengHei", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: inherit; }
+  code, .mono{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Cascadia Code", monospace;
+  }
+  code{
+    background: var(--code-bg);
+    padding: 0.05em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .fileref{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, "Cascadia Code", monospace;
+    font-size: 0.88em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0.05em 0.45em;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  .report{
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 120px;
+  }
+
+  /* ---- masthead ---- */
+  .masthead{
+    margin-bottom: 28px;
+  }
+  .masthead-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .eyebrow{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .sync{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .sync.err{ color: var(--err); }
+  h1{
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 700;
+    margin: 6px 0 8px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .meta{
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+  }
+  .meta .mono{ color: var(--ink); }
+
+  .month-nav{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 20px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .month-nav a{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    text-decoration: none;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 12px;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .month-nav a:hover, .month-nav a:focus-visible{
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  /* ---- report body ---- */
+  #reportMain{
+    margin-top: 8px;
+  }
+  #reportMain.flash .day:first-of-type{
+    animation: flashIn 1.2s ease-out;
+  }
+  @keyframes flashIn{
+    0%{ background: var(--accent-soft); }
+    100%{ background: transparent; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #reportMain.flash .day:first-of-type{ animation: none; }
+  }
+
+  h2.month{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin: 44px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  h2.month:first-child{ margin-top: 0; }
+
+  .day{
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  .day:last-child{ border-bottom: none; }
+
+  .day-date{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 2px;
+  }
+  .day-date .dd{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 22px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .day-date .dow{
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .day-entries{
+    display:flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+  .entry h3{
+    font-size: 15.5px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+  .entry ul{
+    margin: 0;
+    padding-left: 1.15em;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .entry li{
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .entry li ul{
+    margin-top: 6px;
+  }
+  .entry li::marker{
+    color: var(--muted);
+  }
+  .entry strong{ font-weight: 700; }
+
+  @media (max-width: 560px){
+    .day{ grid-template-columns: 1fr; gap: 6px; }
+    .day-date{ flex-direction: row; gap: 8px; align-items: baseline; }
+  }
+
+  .empty-state{
+    color: var(--muted);
+    font-size: 14px;
+    padding: 40px 0;
+  }
+</style>
+</head>
+<body>
+<div class="report">
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="eyebrow">AI GEN FIGMA · 開發紀錄</span>
+      <span class="sync" id="syncStatus">連線中…</span>
+    </div>
+    <h1>工作日報</h1>
+    <p class="meta"><span class="mono" id="rangeText">—</span> · 共 <span class="mono" id="dayCount">—</span> 個工作日 · 內容即時讀自 <code>CHANGELOG.md</code></p>
+    <nav class="month-nav" id="monthNav"></nav>
+  </header>
+
+  <main id="reportMain">
+    <p class="empty-state">正在讀取 CHANGELOG.md …</p>
+  </main>
+</div>
+
+<script>
+(function(){
+  const CHANGELOG_SEGMENTS = ['', 'Gen Figma AI', 'AI-Gen-Figma', 'CHANGELOG.md'];
+  const CHANGELOG_URL = CHANGELOG_SEGMENTS.map(encodeURIComponent).join('/');
+  const REFRESH_MS = 4000;
+
+  const syncEl = document.getElementById('syncStatus');
+  const mainEl = document.getElementById('reportMain');
+  const navEl = document.getElementById('monthNav');
+  const rangeEl = document.getElementById('rangeText');
+  const countEl = document.getElementById('dayCount');
+  const weekday = ['日','一','二','三','四','五','六'];
+
+  let lastText = null;
+
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function inlineFormat(raw){
+    let s = escapeHtml(raw);
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text) => `<span class="fileref">${text}</span>`);
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+    return s;
+  }
+
+  function parseChangelog(text){
+    const lines = text.split('\n');
+    const days = [];
+    let currentDay = null;
+    let currentEntry = null;
+    let listStack = [];
+
+    function resetList(){ listStack = []; }
+
+    function ensureEntry(){
+      if (!currentEntry){
+        currentEntry = { title: null, list: [] };
+        currentDay.entries.push(currentEntry);
+        resetList();
+      }
+    }
+
+    for (const raw of lines){
+      const dateMatch = raw.match(/^##\s+(\d{4}-\d{2}-\d{2})\s*$/);
+      if (dateMatch){
+        if (currentDay) days.push(currentDay);
+        currentDay = { date: dateMatch[1], entries: [] };
+        currentEntry = null;
+        resetList();
+        continue;
+      }
+      if (!currentDay) continue;
+
+      const titleMatch = raw.match(/^###\s+(.+)$/);
+      if (titleMatch){
+        currentEntry = { title: titleMatch[1].trim(), list: [] };
+        currentDay.entries.push(currentEntry);
+        resetList();
+        continue;
+      }
+
+      const bulletMatch = raw.match(/^(\s*)-\s+(.*)$/);
+      if (bulletMatch){
+        ensureEntry();
+        const indent = bulletMatch[1].length;
+        const node = { html: inlineFormat(bulletMatch[2]), children: [] };
+        while (listStack.length && listStack[listStack.length - 1].indent >= indent){
+          listStack.pop();
+        }
+        const parentItems = listStack.length ? listStack[listStack.length - 1].items : currentEntry.list;
+        parentItems.push(node);
+        listStack.push({ indent, items: node.children });
+        continue;
+      }
+    }
+    if (currentDay) days.push(currentDay);
+    return days;
+  }
+
+  function renderList(items){
+    if (!items || !items.length) return '';
+    return '<ul>' + items.map(it => `<li>${it.html}${renderList(it.children)}</li>`).join('') + '</ul>';
+  }
+
+  function renderEntry(entry){
+    const titleHtml = entry.title ? `<h3>${inlineFormat(entry.title)}</h3>` : '';
+    return `<article class="entry">${titleHtml}${renderList(entry.list)}</article>`;
+  }
+
+  function renderDays(days){
+    let mainHtml = '';
+    const navMonths = [];
+    let lastMonth = null;
+
+    for (const day of days){
+      const [y, m, d] = day.date.split('-').map(Number);
+      const monthKey = `${y}-${String(m).padStart(2,'0')}`;
+      if (monthKey !== lastMonth){
+        const anchorId = `m-${monthKey}`;
+        mainHtml += `<h2 class="month" id="${anchorId}">${y} 年 ${m} 月</h2>`;
+        navMonths.push({ label: `${m} 月`, anchor: anchorId });
+        lastMonth = monthKey;
+      }
+      const dow = weekday[new Date(y, m - 1, d).getDay()];
+      const entriesHtml = day.entries.map(renderEntry).join('');
+      mainHtml += `
+        <section class="day" id="d-${day.date}">
+          <div class="day-date"><span class="dd">${String(d).padStart(2,'0')}</span><span class="dow">週${dow}</span></div>
+          <div class="day-entries">${entriesHtml}</div>
+        </section>`;
+    }
+
+    const navHtml = navMonths.map(mo => `<a href="#${mo.anchor}">${mo.label}</a>`).join('');
+    return {
+      mainHtml,
+      navHtml,
+      count: days.length,
+      first: days.length ? days[days.length - 1].date : '—',
+      last: days.length ? days[0].date : '—'
+    };
+  }
+
+  function fmtTime(d){
+    return d.toLocaleTimeString('zh-Hant-TW', { hour12: false });
+  }
+
+  async function refresh(initial){
+    try{
+      const res = await fetch(CHANGELOG_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      if (text !== lastText){
+        lastText = text;
+        const days = parseChangelog(text);
+        const { mainHtml, navHtml, count, first, last } = renderDays(days);
+        mainEl.innerHTML = mainHtml || '<p class="empty-state">CHANGELOG.md 目前沒有內容。</p>';
+        navEl.innerHTML = navHtml;
+        rangeEl.textContent = `${first} – ${last}`;
+        countEl.textContent = String(count);
+        if (!initial){
+          mainEl.classList.remove('flash');
+          void mainEl.offsetWidth;
+          mainEl.classList.add('flash');
+        }
+      }
+      syncEl.textContent = `● 已同步 ${fmtTime(new Date())}`;
+      syncEl.classList.remove('err');
+    }catch(e){
+      syncEl.textContent = `○ 讀取失敗,確認本機伺服器是否啟動(${fmtTime(new Date())})`;
+      syncEl.classList.add('err');
+    }
+  }
+
+  refresh(true);
+  setInterval(() => refresh(false), REFRESH_MS);
+})();
+</script>
+</body>
+</html>
