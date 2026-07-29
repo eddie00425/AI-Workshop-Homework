@@ -236,7 +236,7 @@
       <span class="sync" id="syncStatus">連線中…</span>
     </div>
     <h1>工作日報</h1>
-    <p class="meta"><span class="mono" id="rangeText">—</span> · 共 <span class="mono" id="dayCount">—</span> 個工作日 · 內容即時讀自 <code>CHANGELOG.md</code></p>
+    <p class="meta"><span class="mono" id="rangeText">—</span> · 共 <span class="mono" id="dayCount">—</span> 個工作日 · <span id="sourceNote">內容即時讀自 <code>CHANGELOG.md</code></span></p>
     <nav class="month-nav" id="monthNav"></nav>
   </header>
 
@@ -246,19 +246,9 @@
 </div>
 
 <script>
+/* ==== SHARED PARSE/RENDER：live 版與靜態快照版共用，勿重複維護 ==== */
 (function(){
-  const CHANGELOG_SEGMENTS = ['', 'Gen Figma AI', 'AI-Gen-Figma', 'CHANGELOG.md'];
-  const CHANGELOG_URL = CHANGELOG_SEGMENTS.map(encodeURIComponent).join('/');
-  const REFRESH_MS = 4000;
-
-  const syncEl = document.getElementById('syncStatus');
-  const mainEl = document.getElementById('reportMain');
-  const navEl = document.getElementById('monthNav');
-  const rangeEl = document.getElementById('rangeText');
-  const countEl = document.getElementById('dayCount');
   const weekday = ['日','一','二','三','四','五','六'];
-
-  let lastText = null;
 
   function escapeHtml(s){
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -373,6 +363,43 @@
     return d.toLocaleTimeString('zh-Hant-TW', { hour12: false });
   }
 
+  function applyDays(text, els, flash){
+    const days = parseChangelog(text);
+    const { mainHtml, navHtml, count, first, last } = renderDays(days);
+    els.main.innerHTML = mainHtml || '<p class="empty-state">CHANGELOG.md 目前沒有內容。</p>';
+    els.nav.innerHTML = navHtml;
+    els.range.textContent = `${first} – ${last}`;
+    els.count.textContent = String(count);
+    if (flash){
+      els.main.classList.remove('flash');
+      void els.main.offsetWidth;
+      els.main.classList.add('flash');
+    }
+  }
+
+  window.__report = { parseChangelog, renderDays, applyDays, fmtTime };
+})();
+/* ==== END SHARED ==== */
+
+/* BOOTSTRAP:LIVE:START — 產生靜態快照時，generate-static-report.py 會整段替換這個區塊 */
+(function(){
+  const { applyDays, fmtTime } = window.__report;
+  const CHANGELOG_SEGMENTS = ['', 'Gen Figma AI', 'AI-Gen-Figma', 'CHANGELOG.md'];
+  const CHANGELOG_URL = CHANGELOG_SEGMENTS.map(encodeURIComponent).join('/');
+  const REFRESH_MS = 4000;
+
+  const els = {
+    main: document.getElementById('reportMain'),
+    nav: document.getElementById('monthNav'),
+    range: document.getElementById('rangeText'),
+    count: document.getElementById('dayCount')
+  };
+  const syncEl = document.getElementById('syncStatus');
+  const sourceEl = document.getElementById('sourceNote');
+  sourceEl.innerHTML = '內容即時讀自 <code>CHANGELOG.md</code>';
+
+  let lastText = null;
+
   async function refresh(initial){
     try{
       const res = await fetch(CHANGELOG_URL, { cache: 'no-store' });
@@ -380,17 +407,7 @@
       const text = await res.text();
       if (text !== lastText){
         lastText = text;
-        const days = parseChangelog(text);
-        const { mainHtml, navHtml, count, first, last } = renderDays(days);
-        mainEl.innerHTML = mainHtml || '<p class="empty-state">CHANGELOG.md 目前沒有內容。</p>';
-        navEl.innerHTML = navHtml;
-        rangeEl.textContent = `${first} – ${last}`;
-        countEl.textContent = String(count);
-        if (!initial){
-          mainEl.classList.remove('flash');
-          void mainEl.offsetWidth;
-          mainEl.classList.add('flash');
-        }
+        applyDays(text, els, !initial);
       }
       syncEl.textContent = `● 已同步 ${fmtTime(new Date())}`;
       syncEl.classList.remove('err');
@@ -403,6 +420,7 @@
   refresh(true);
   setInterval(() => refresh(false), REFRESH_MS);
 })();
+/* BOOTSTRAP:LIVE:END */
 </script>
 </body>
 </html>

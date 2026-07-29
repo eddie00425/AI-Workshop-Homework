@@ -8,8 +8,9 @@
 
 | 檔案 | 角色 |
 |---|---|
-| `report.html` | 報表本體。純前端 JS：抓取 → 解析 → 渲染 → 定時輪詢，不含任何寫死的日報內容 |
+| `report.html` | 報表本體（即時同步版）。前端 JS 分兩塊：共用的 parse/渲染邏輯（`window.__report`）+ 即時 bootstrap（抓取 → 解析 → 渲染 → 定時輪詢），不含任何寫死的日報內容 |
 | `start-report.command` | 啟動器。雙擊執行，開本機伺服器 + 開瀏覽器 |
+| `generate-static-report.py` | 靜態快照產生器。讀一次 CHANGELOG.md，烘出單一、可離線開啟的 `MMDD_daily_report_Eddie.html`（作業繳交用） |
 
 ## 運作機制
 
@@ -37,6 +38,19 @@
 4. 每 4 秒重新 `fetch()` 一次；內容若有變化才重繪（避免打斷閱讀捲動位置），並閃一下提示已更新；每次都更新畫面右上角「已同步 HH:MM:SS」時間戳
 5. `fetch` 失敗（伺服器沒開）時,同步狀態顯示「讀取失敗」提示
 
+### 靜態快照版（`generate-static-report.py`）
+
+為符合 `AI-Workshop-Homework` repo 「作業一律單一 `.html`」的規定而做——即時同步版依賴本機伺服器與 fetch，離開 Eddie 電腦打不開，不能拿來繳交。
+
+機制：**不重寫 parse/渲染邏輯**，只換「資料怎麼進來」這一段。
+
+1. `report.html` 的 `<script>` 拆成兩塊：共用邏輯（`escapeHtml` / `inlineFormat` / `parseChangelog` / `renderList` / `renderEntry` / `renderDays` / `applyDays`，掛在 `window.__report` 上供外部呼叫）+ 用註解標記包起來的即時 bootstrap（`/* BOOTSTRAP:LIVE:START */` … `/* BOOTSTRAP:LIVE:END */`，做 fetch + 輪詢那段）
+2. `generate-static-report.py` 讀一次 `report.html` 當範本、讀一次 `CHANGELOG.md` 當資料，把範本裡整段 `BOOTSTRAP:LIVE` 區塊換成一段新的 bootstrap：資料不 fetch，改成把 CHANGELOG 全文用 `json.dumps` 逃脫後直接寫死成 JS 字串常數（另外處理掉 `</script` 避免提早關閉標籤），頁面載入時呼叫共用的 `applyDays()` 渲染一次，不設輪詢
+3. 同時把「產生當下」的時間戳（`YYYY-MM-DD HH:MM:SS`）一併寫進去，畫面上 `sourceNote` 顯示「此頁為靜態快照，擷取於 …」、`syncStatus` 顯示「● 靜態快照（離線可讀）」，不會誤導成即時版
+4. 輸出檔名 `MMDD_daily_report_Eddie.html`（`MMDD` 取產生當下日期），寫在同一資料夾
+
+跑法：`python3 generate-static-report.py`。CHANGELOG.md 之後若更新、想換一份新快照，重新跑一次即可（不會自動觸發，見下方限制）。
+
 ## 已知限制 / 取捨
 
 - **輪詢非真即時**：用 4 秒定時重讀模擬「即時」，不是檔案系統事件推播（瀏覽器沙盒沒有原生檔案監看能力）
@@ -44,6 +58,7 @@
 - **無自訂字型**：中文內容量大，內嵌 CJK 字型會讓檔案暴增到幾十 MB，改用系統字體（等寬體排數字/日期/代碼、系統中文字體排內文）
 - **需要伺服器持續運行**：電腦重開機、或手動關掉 terminal/伺服器行程後，需要重新雙擊 `start-report.command`
 - **only 支援本機**：目前只服務 Eddie 自己的 Mac，未考慮多人共用或雲端部署
+- **靜態快照不會自動更新**：這是它跟即時版的必然取捨（單一靜態檔 vs 自動跟隨外部檔案，兩者不可兼得）——CHANGELOG.md 改了之後，快照內容不會變，要更新須重新執行 `generate-static-report.py` 產生新檔案，不會自動觸發
 
 ## 決策紀錄
 
@@ -58,11 +73,8 @@
 | CHANGELOG.md 絕對路徑 | `/Users/eddieshen/Documents/Gen Figma AI/AI-Gen-Figma/CHANGELOG.md` |
 | 輪詢間隔 | 4000ms |
 
-## 待辦
-
-- **靜態快照版（作業繳交用）**：`AI-Workshop-Homework` repo 規定作業一律是單一 `.html`（見 repo 根目錄 README.md），這份即時同步版不符合（多檔案、需本機伺服器、離開 Eddie 電腦打不開）。待做：另外產出一份「內容於產生當下寫死」的單一 html，沿用同一套視覺設計，命名為 `MMDD_daily_report_Eddie.html`，放在同一資料夾內一併繳交。此即時同步版本身保留、不受影響
-
 ## 變更紀錄
 
 - 2026-07-29：初版建立
 - 2026-07-29：搬進 `AI-Workshop-Homework/個人日報 Agent/沈子翔 Eddie/`（本專案其實是該 repo 的工作坊作業）；`start-report.command` 的 `REL_PATH` 同步改新路徑
+- 2026-07-29：完成靜態快照版——`report.html` 拆成共用邏輯 + 即時 bootstrap 兩段；新增 `generate-static-report.py`，跑一次烘出 `MMDD_daily_report_Eddie.html`（作業繳交用）。已驗證：離線（零 network request）、內容與即時版一致、擷取時間戳正確顯示
