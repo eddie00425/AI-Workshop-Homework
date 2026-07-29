@@ -1,0 +1,71 @@
+{
+  "date": "2026-07-29",
+  "timezone": "Asia/Taipei",
+  "evidence": [
+    {
+      "id": "notion:card:daily-report-agent",
+      "source_type": "notion",
+      "timestamp": "2026-07-29T17:20:00+08:00",
+      "title": "每日進度報告 Agent",
+      "text": "工作看板卡片已移到完成，內容包含 report generator、agent prompt 與 evidence schema。",
+      "url": "",
+      "work_related": true
+    },
+    {
+      "id": "ai:codex:daily-report-design",
+      "source_type": "codex",
+      "timestamp": "2026-07-29T17:35:00+08:00",
+      "title": "Codex session: daily_report",
+      "text": "建立 Markdown 與 HTML 的一致輸出規則，並加入 evidence id 驗證。",
+      "url": "",
+      "work_related": true
+    },
+    {
+      "id": "slack:daily-report:plan",
+      "source_type": "slack",
+      "timestamp": "2026-07-29T17:45:00+08:00",
+      "title": "#daily-report",
+      "text": "明天要補 Slack channel 名稱與 AI session log 實際路徑。",
+      "url": "",
+      "work_related": true
+    }
+  ],
+  "report": {
+    "date": "2026-07-29",
+    "summary": "今天完成每日進度報告 Agent 的執行規格與輸出骨架。",
+    "completed": [
+      {
+        "workstream": "Daily Report Agent",
+        "items": [
+          {
+            "text": "完成每日進度報告 Agent 的規格、提示詞與 evidence schema，讓後續資料來源能用同一格式接入。",
+            "evidence_ids": ["notion:card:daily-report-agent"]
+          },
+          {
+            "text": "完成 Markdown 與 HTML 產生器，並加入 evidence id 驗證以避免輸出沒有來源的工作項目。",
+            "evidence_ids": ["ai:codex:daily-report-design"]
+          }
+        ]
+      }
+    ],
+    "blockers": [
+      {
+        "text": "Slack channel 名稱與 AI session log 實際路徑尚未補齊。",
+        "evidence_ids": ["slack:daily-report:plan"]
+      }
+    ],
+    "tomorrow": [
+      {
+        "text": "補齊 Slack 頻道、本人 user id 與 AI session log 路徑後，開始實作資料收集器。",
+        "evidence_ids": ["slack:daily-report:plan"]
+      }
+    ],
+    "analysis_additions": [
+      {
+        "title": "來源信心等級",
+        "text": "建議未來替每個報告項目加上來源信心等級，區分明確完成、推測完成與待補確認。",
+        "evidence_ids": ["ai:codex:daily-report-design"]
+      }
+    ]
+  }
+}

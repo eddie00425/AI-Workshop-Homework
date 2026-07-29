@@ -1,0 +1,35 @@
+{
+  "timezone": "Asia/Taipei",
+  "notion": {
+    "board_url": "https://www.notion.so/2c3f0446f997807fbd73e0df1b150258?v=2c3f0446f997807fa4fd000c2f896299&source=copy_link"
+  },
+  "slack": {
+    "workspace_url": "https://cathayweb.slack.com",
+    "self_user_id": "U09RYGN1T52",
+    "channels": [
+      {
+        "name": "Cathay Web",
+        "id": "D09RDG5URE3",
+        "type": "private"
+      },
+      {
+        "name": "Cathay Web",
+        "id": "C050BHN6U83",
+        "type": "private"
+      }
+    ],
+    "history_limit": 15,
+    "max_pages_per_channel": 1
+  },
+  "ai_sessions": {
+    "codex_log_paths": ["待補"],
+    "claude_code_log_paths": ["待補"]
+  },
+  "redaction": {
+    "terms": ["待補"]
+  },
+  "output": {
+    "reports_dir": "daily_report/reports"
+  }
+}
+
