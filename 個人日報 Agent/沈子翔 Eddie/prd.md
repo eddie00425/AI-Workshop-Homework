@@ -11,6 +11,7 @@
 | `report.html` | 報表本體（即時同步版）。前端 JS 分兩塊：共用的 parse/渲染邏輯（`window.__report`）+ 即時 bootstrap（抓取 → 解析 → 渲染 → 定時輪詢），不含任何寫死的日報內容 |
 | `start-report.command` | 啟動器。雙擊執行，開本機伺服器 + 開瀏覽器 |
 | `generate-static-report.py` | 靜態快照產生器。讀一次 CHANGELOG.md，烘出單一、可離線開啟的 `MMDD_daily_report_Eddie.html`（作業繳交用） |
+| `regenerate.command` | 產生器的雙擊啟動器。跑 `generate-static-report.py` 並自動開啟產出的 html，免打字 |
 
 ## 運作機制
 
@@ -49,7 +50,9 @@
 3. 同時把「產生當下」的時間戳（`YYYY-MM-DD HH:MM:SS`）一併寫進去，畫面上 `sourceNote` 顯示「此頁為靜態快照，擷取於 …」、`syncStatus` 顯示「● 靜態快照（離線可讀）」，不會誤導成即時版
 4. 輸出檔名 `MMDD_daily_report_Eddie.html`（`MMDD` 取產生當下日期），寫在同一資料夾
 
-跑法：`python3 generate-static-report.py`。CHANGELOG.md 之後若更新、想換一份新快照，重新跑一次即可（不會自動觸發，見下方限制）。
+跑法：雙擊 `regenerate.command`（會自動開啟新產出的 html），或手動 `python3 generate-static-report.py`。CHANGELOG.md 之後若更新、想換一份新快照，重新跑一次即可（不會自動觸發，見下方限制）。
+
+**為何不是 html 裡放一個「更新」按鈕**：瀏覽器基於安全設計，不允許任何網頁（無論靜態或伺服器版）從頁面內執行本機程式——這不是本專案的限制，是所有瀏覽器都擋死的界線。唯一能做到「網頁按鈕觸發 script」的方法是另外常駐一個本機伺服器、按鈕呼叫伺服器端點去執行——但那樣就得依賴伺服器持續運行，違背靜態快照「單一檔案、到處能開」的初衷，所以改用雙擊 `.command` 這個在瀏覽器安全限制下最接近「一鍵」的路徑。
 
 ## 已知限制 / 取捨
 
@@ -78,3 +81,4 @@
 - 2026-07-29：初版建立
 - 2026-07-29：搬進 `AI-Workshop-Homework/個人日報 Agent/沈子翔 Eddie/`（本專案其實是該 repo 的工作坊作業）；`start-report.command` 的 `REL_PATH` 同步改新路徑
 - 2026-07-29：完成靜態快照版——`report.html` 拆成共用邏輯 + 即時 bootstrap 兩段；新增 `generate-static-report.py`，跑一次烘出 `MMDD_daily_report_Eddie.html`（作業繳交用）。已驗證：離線（零 network request）、內容與即時版一致、擷取時間戳正確顯示
+- 2026-07-29：新增 `regenerate.command`（雙擊跑產生器 + 自動開啟結果）。曾考慮「html 內建更新按鈕」，因瀏覽器安全限制（頁面不能執行本機程式）不可行，改採此雙擊方案
