@@ -384,8 +384,7 @@
 /* BOOTSTRAP:LIVE:START — 產生靜態快照時，generate-static-report.py 會整段替換這個區塊 */
 (function(){
   const { applyDays, fmtTime } = window.__report;
-  const CHANGELOG_SEGMENTS = ['', 'Gen Figma AI', 'AI-Gen-Figma', 'CHANGELOG.md'];
-  const CHANGELOG_URL = CHANGELOG_SEGMENTS.map(encodeURIComponent).join('/');
+  const CHANGELOG_URL = 'CHANGELOG.md'; // 與 report.html 同資料夾的複本
   const REFRESH_MS = 4000;
 
   const els = {

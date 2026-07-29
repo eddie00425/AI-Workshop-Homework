@@ -2,52 +2,47 @@
 
 ## 概述
 
-把 [AI Gen Figma 專案](/Users/eddieshen/Documents/Gen%20Figma%20AI/AI-Gen-Figma/CHANGELOG.md)的 `CHANGELOG.md` 即時渲染成一份好讀的工作日報網頁。核心原則：**html 只是載體，md 是唯一資料來源**——不重新產生 html、不複製內容進本專案，CHANGELOG.md 改了,頁面開著就會自動反映。
+把 `CHANGELOG.md` 烘成一份好讀的工作日報靜態網頁，作為 `AI-Workshop-Homework` 的作業繳交物。核心原則：**繳交物是單一靜態 html，`CHANGELOG.md` 是資料來源**——內容於產生當下寫死進去，之後要更新內容就重跑一次產生器。
+
+資料來源是本資料夾內的 `CHANGELOG.md`，這是從 [AI Gen Figma 專案](/Users/eddieshen/Documents/Gen%20Figma%20AI/AI-Gen-Figma/CHANGELOG.md)複製出來的一份**獨立副本**，供這份作業使用；不會回頭修改、也不會自動同步原始檔（見「決策紀錄」）。
+
+本專案原本還有一個「即時同步版」（開瀏覽器、開本機伺服器、每 4 秒自動 fetch 重繪）給 Eddie 自己debug/預覽用，驗證完靜態機制可行後已停用其個人化啟動流程（`start-report.command` 已刪除）——**現在只留靜態繳交這條路徑**。`report.html` 仍保留，但角色改變：它不再是「打開來看」的頁面，純粹是 `generate-static-report.py` 的**內部範本**（共用的 parse/渲染邏輯 + CSS 都在裡面，刪了範本產生器會壞掉，見下方機制說明）。
 
 ## 系統組成
 
 | 檔案 | 角色 |
 |---|---|
-| `report.html` | 報表本體（即時同步版）。前端 JS 分兩塊：共用的 parse/渲染邏輯（`window.__report`）+ 即時 bootstrap（抓取 → 解析 → 渲染 → 定時輪詢），不含任何寫死的日報內容 |
-| `start-report.command` | 啟動器。雙擊執行，開本機伺服器 + 開瀏覽器 |
-| `generate-static-report.py` | 靜態快照產生器。讀一次 CHANGELOG.md，烘出單一、可離線開啟的 `MMDD_daily_report_Eddie.html`（作業繳交用） |
+| `CHANGELOG.md` | 資料來源。從 AI Gen Figma 專案複製出來的獨立副本，產生器只讀這份，不讀外部原始檔 |
+| `report.html` | **內部範本，非給人打開的頁面**。前端 JS 分兩塊：共用的 parse/渲染邏輯（`window.__report`）+ 一段用註解標記包起來、將被產生器整段替換掉的 bootstrap 佔位區 |
+| `generate-static-report.py` | 靜態快照產生器。讀一次 CHANGELOG.md + report.html 範本，烘出單一、可離線開啟的 `MMDD_daily_report_Eddie.html`（作業繳交本體） |
 | `regenerate.command` | 產生器的雙擊啟動器。跑 `generate-static-report.py` 並自動開啟產出的 html，免打字 |
 
 ## 運作機制
 
-### 為何需要本機伺服器
+### `report.html`：只當範本，機制沿用「共用邏輯 + 可替換 bootstrap」的設計
 
-`report.html` 用 `fetch()` 讀取 `CHANGELOG.md`。若直接雙擊 html（`file://` 協定開啟），瀏覽器 CORS 政策會擋掉本機檔案的 `fetch()`，即時同步會失敗（畫面顯示「讀取失敗」）。`start-report.command` 先在 `~/Documents` 開一個 Python 內建的靜態伺服器（`python3 -m http.server`），讓網址變成 `http://localhost:8934/...`，`fetch()` 才被允許。
+`report.html` 的 `<script>` 拆成兩塊：
 
-伺服器根目錄選在 `~/Documents`，因為這是 `report.html` 所在資料夾與 `CHANGELOG.md` 所在資料夾的共同上層——伺服器不能讀取根目錄以外的路徑，兩個檔案得同在一棵樹下才能互相讀到。
+1. 共用邏輯（`escapeHtml` / `inlineFormat` / `parseChangelog` / `renderList` / `renderEntry` / `renderDays` / `applyDays`，掛在 `window.__report` 上）——parse markdown、渲染 html 的實際邏輯全在這裡
+2. 用註解標記包起來的 bootstrap 佔位區（`/* BOOTSTRAP:LIVE:START */` … `/* BOOTSTRAP:LIVE:END */`）——`generate-static-report.py` 會把這整段換成靜態版的 bootstrap
 
-### 啟動流程（`start-report.command`）
-
-1. 檢查 port 8934 是否已被佔用（`lsof`）——已有伺服器在跑就跳過，不重複啟動
-2. 沒有就在 `~/Documents` 背景啟動 `python3 -m http.server 8934`
-3. 用 Python 組出正確編碼過的網址（含中文資料夾名），呼叫系統瀏覽器開啟 `report.html`
-
-### 前端運作（`report.html`）
-
-1. 頁面載入時 `fetch()` 讀取 `CHANGELOG.md`（路徑寫死：`/Gen Figma AI/AI-Gen-Figma/CHANGELOG.md`，相對於伺服器根目錄）
-2. 解析 markdown 為結構化資料，規則：
+parse 規則：
    - `## YYYY-MM-DD` → 一個日期區塊
    - `### 標題` → 該日期底下的一個條目（entry）；若日期底下沒有 `###`（如最早的 2026-05-20），視為一個無標題條目
    - `- ` bullet → 條目內容，依縮排（每 2 空格一層）組成巢狀清單
    - 行內語法：`**粗體**` → `<strong>`、`` `code` `` → `<code>`、`[文字](連結)` → 只取文字、渲染成不可點的檔名標籤（chip），不解析連結目標
-3. 依日期所屬月份自動分段、產生月份跳轉導覽
-4. 每 4 秒重新 `fetch()` 一次；內容若有變化才重繪（避免打斷閱讀捲動位置），並閃一下提示已更新；每次都更新畫面右上角「已同步 HH:MM:SS」時間戳
-5. `fetch` 失敗（伺服器沒開）時,同步狀態顯示「讀取失敗」提示
 
-### 靜態快照版（`generate-static-report.py`）
+**這份檔案本身不是給人打開的頁面**——它裡面那段 bootstrap 佔位區雖然技術上寫的是「fetch + 輪詢」邏輯（因為開發階段是拿它來即時預覽、驗證 parse 邏輯正確），但正式流程裡沒有任何腳本會把它單獨啟動來看；它唯一的用途是被 `generate-static-report.py` 讀取、替換、產出真正繳交的靜態檔。**不要刪這個檔案**——共用邏輯與 CSS 都只在這裡一份，刪了 `generate-static-report.py` 找不到範本會直接壞掉。
 
-為符合 `AI-Workshop-Homework` repo 「作業一律單一 `.html`」的規定而做——即時同步版依賴本機伺服器與 fetch，離開 Eddie 電腦打不開，不能拿來繳交。
+### 靜態快照版（`generate-static-report.py`）—— 實際繳交物的產生方式
+
+為符合 `AI-Workshop-Homework` repo 「作業一律單一 `.html`」的規定而做。
 
 機制：**不重寫 parse/渲染邏輯**，只換「資料怎麼進來」這一段。
 
-1. `report.html` 的 `<script>` 拆成兩塊：共用邏輯（`escapeHtml` / `inlineFormat` / `parseChangelog` / `renderList` / `renderEntry` / `renderDays` / `applyDays`，掛在 `window.__report` 上供外部呼叫）+ 用註解標記包起來的即時 bootstrap（`/* BOOTSTRAP:LIVE:START */` … `/* BOOTSTRAP:LIVE:END */`，做 fetch + 輪詢那段）
-2. `generate-static-report.py` 讀一次 `report.html` 當範本、讀一次 `CHANGELOG.md` 當資料，把範本裡整段 `BOOTSTRAP:LIVE` 區塊換成一段新的 bootstrap：資料不 fetch，改成把 CHANGELOG 全文用 `json.dumps` 逃脫後直接寫死成 JS 字串常數（另外處理掉 `</script` 避免提早關閉標籤），頁面載入時呼叫共用的 `applyDays()` 渲染一次，不設輪詢
-3. 同時把「產生當下」的時間戳（`YYYY-MM-DD HH:MM:SS`）一併寫進去，畫面上 `sourceNote` 顯示「此頁為靜態快照，擷取於 …」、`syncStatus` 顯示「● 靜態快照（離線可讀）」，不會誤導成即時版
+1. 讀一次 `report.html` 當範本、讀一次 `CHANGELOG.md` 當資料
+2. 把範本裡整段 `BOOTSTRAP:LIVE` 區塊換成一段新的 bootstrap：資料不 fetch，改成把 CHANGELOG 全文用 `json.dumps` 逃脫後直接寫死成 JS 字串常數（另外處理掉 `</script` 避免提早關閉標籤），頁面載入時呼叫共用的 `applyDays()` 渲染一次，不設輪詢
+3. 同時把「產生當下」的時間戳（`YYYY-MM-DD HH:MM:SS`）一併寫進去，畫面上 `sourceNote` 顯示「此頁為靜態快照，擷取於 …」、`syncStatus` 顯示「● 靜態快照（離線可讀）」
 4. 輸出檔名 `MMDD_daily_report_Eddie.html`（`MMDD` 取產生當下日期），寫在同一資料夾
 
 跑法：雙擊 `regenerate.command`（會自動開啟新產出的 html），或手動 `python3 generate-static-report.py`。CHANGELOG.md 之後若更新、想換一份新快照，重新跑一次即可（不會自動觸發，見下方限制）。
@@ -56,25 +51,23 @@
 
 ## 已知限制 / 取捨
 
-- **輪詢非真即時**：用 4 秒定時重讀模擬「即時」，不是檔案系統事件推播（瀏覽器沙盒沒有原生檔案監看能力）
 - **連結不可點**：CHANGELOG 裡的 `[檔名](相對路徑)` 只取檔名文字顯示，不組真實可點連結——避免中文路徑 / 空格編碼不一致導致連結失效或連錯檔案。之後若要做成可點連結需另外處理路徑編碼
 - **無自訂字型**：中文內容量大，內嵌 CJK 字型會讓檔案暴增到幾十 MB，改用系統字體（等寬體排數字/日期/代碼、系統中文字體排內文）
-- **需要伺服器持續運行**：電腦重開機、或手動關掉 terminal/伺服器行程後，需要重新雙擊 `start-report.command`
-- **only 支援本機**：目前只服務 Eddie 自己的 Mac，未考慮多人共用或雲端部署
-- **靜態快照不會自動更新**：這是它跟即時版的必然取捨（單一靜態檔 vs 自動跟隨外部檔案，兩者不可兼得）——CHANGELOG.md 改了之後，快照內容不會變，要更新須重新執行 `generate-static-report.py` 產生新檔案，不會自動觸發
+- **靜態快照不會自動更新**：CHANGELOG.md 改了之後，已產生的快照內容不會變，要更新須重新執行 `generate-static-report.py`（或雙擊 `regenerate.command`）產生新檔案，不會自動觸發——這是「單一靜態檔可到處開」與「自動跟隨資料變動」兩者不可兼得的必然取捨
+- **資料來源副本不會自動跟原始檔同步**：本資料夾的 `CHANGELOG.md` 是手動複製出來的獨立副本，AI Gen Figma 專案那份原始檔之後再更新，這份副本不會跟著變，要更新須重新 `cp` 覆蓋一次（目前無自動化，屬刻意設計——見決策紀錄）
 
 ## 決策紀錄
 
-- **2026-07-29**：曾考慮三種 md↔html 同步方案——(A) 本機伺服器 + fetch 輪詢、(B) File System Access API（僅 Chrome/Edge）、(C) 手動拖曳檔案。選 A：跨瀏覽器相容性最好，且能做到「開著不用管、自動更新」的體感，最貼近「即時」的需求
+- **2026-07-29**：開發階段曾考慮三種 md↔html 同步方案——(A) 本機伺服器 + fetch 輪詢、(B) File System Access API（僅 Chrome/Edge）、(C) 手動拖曳檔案。選 A 做即時預覽版：跨瀏覽器相容性最好，且能做到「開著不用管、自動更新」的體感，方便驗證 parse 邏輯正確
+- **2026-07-29**：資料來源從「讀 AI Gen Figma 專案的外部原始檔」改成「讀本資料夾內的獨立副本」。原因：① Eddie 需要新增測試內容驗證整個機制，但不能動外部那份「實打實」的正式紀錄；② 副本與工具同資料夾後，路徑都能大幅簡化，不用再靠「共同上層資料夾」這種繞路設計；③ 讓這份作業徹底自我包含，不依賴 repo 外部、其他專案的私有路徑。代價：副本不會自動跟著原始 CHANGELOG.md 更新，需要手動 `cp` 覆蓋（見下方限制）
+- **2026-07-29**：驗證完整個機制可行後，確認**只有靜態繳交路徑是真正需要的**，即時預覽版對 Eddie 來說只是驗證用的過渡工具。刪除 `start-report.command`（個人化啟動流程），`report.html` 保留但重新定位為「`generate-static-report.py` 的內部範本」，不再是會被單獨打開的頁面
 
 ## 關鍵設定值（改動前查這裡）
 
 | 項目 | 值 |
 |---|---|
-| 本機伺服器 port | `8934` |
-| 伺服器根目錄 | `~/Documents` |
-| CHANGELOG.md 絕對路徑 | `/Users/eddieshen/Documents/Gen Figma AI/AI-Gen-Figma/CHANGELOG.md` |
-| 輪詢間隔 | 4000ms |
+| CHANGELOG.md | 本資料夾內的獨立副本，非外部原始檔（見概述） |
+| 靜態快照輸出檔名 | `MMDD_daily_report_Eddie.html`（`MMDD` = 產生當下日期） |
 
 ## 變更紀錄
 
@@ -82,3 +75,5 @@
 - 2026-07-29：搬進 `AI-Workshop-Homework/個人日報 Agent/沈子翔 Eddie/`（本專案其實是該 repo 的工作坊作業）；`start-report.command` 的 `REL_PATH` 同步改新路徑
 - 2026-07-29：完成靜態快照版——`report.html` 拆成共用邏輯 + 即時 bootstrap 兩段；新增 `generate-static-report.py`，跑一次烘出 `MMDD_daily_report_Eddie.html`（作業繳交用）。已驗證：離線（零 network request）、內容與即時版一致、擷取時間戳正確顯示
 - 2026-07-29：新增 `regenerate.command`（雙擊跑產生器 + 自動開啟結果）。曾考慮「html 內建更新按鈕」，因瀏覽器安全限制（頁面不能執行本機程式）不可行，改採此雙擊方案
+- 2026-07-29：把 `CHANGELOG.md` 複製一份進本資料夾，資料來源改為這份獨立副本（不再讀外部原始檔）；`report.html` / `start-report.command` / `generate-static-report.py` 的路徑同步簡化為同資料夾相對路徑。已實測驗證：在副本新增一筆測試條目，即時版 4 秒內自動反映（30 個工作日、更新閃爍提示），重跑產生器也正確烘進新內容（network 僅 html 本體一筆，證實非動態讀取）
+- 2026-07-29：驗證通過、移除測試條目後，確認只需要靜態繳交路徑——刪除 `start-report.command`；`report.html` 重新定位為產生器專用的內部範本（不再是給人打開的頁面）；重新產生乾淨的 `0729_daily_report_Eddie.html`（29 個工作日，無測試內容）

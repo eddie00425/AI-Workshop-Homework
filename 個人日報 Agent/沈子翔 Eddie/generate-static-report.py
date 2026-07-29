@@ -16,7 +16,7 @@ from datetime import datetime
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-CHANGELOG_PATH = Path("/Users/eddieshen/Documents/Gen Figma AI/AI-Gen-Figma/CHANGELOG.md")
+CHANGELOG_PATH = HERE / "CHANGELOG.md"  # 本資料夾內的複本，與 Gen Figma AI 專案原始檔分開
 TEMPLATE_PATH = HERE / "report.html"
 
 BOOTSTRAP_START = "/* BOOTSTRAP:LIVE:START"
