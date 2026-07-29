@@ -6,50 +6,43 @@
 <title>寶寶食譜小幫手 · 介面原型</title>
 <style>
   :root{
-    /* 奶油牛奶底 + 粉藍粉紅 + 薄荷奶油，刻意調成帶暖的中性灰 */
-    --cream:#FBF6EF;
+    /* 日式和紙：生成り紙底、墨色文字（高對比）、桜粉／抹茶／藍鼠低彩度點綴 */
+    --cream:#F5F1E8;
     --milk:#FFFFFF;
-    --sky:#8FCBE6;
-    --sky-deep:#5FA8CC;
-    --pink:#FFAEC5;
-    --pink-deep:#F98BAC;
-    --mint:#AFE3C4;
-    --butter:#FFE1A0;
-    --ink:#5C4A44;
-    --ink-soft:#8B7A73;
-    --line:#EFE4D8;
-    --bot-bubble:#EAF6FB;
-    --user-bubble:#FFDCE6;
-    --card:#FFFFFF;
-    --shadow:26px 30px 60px -30px rgba(120,90,80,.45);
-    --focus:#F98BAC;
-    --backdrop-1:#DCF0F7;
-    --backdrop-2:#FDEAF0;
-    --backdrop-3:#EAF7EE;
+    --sky:#9BB6C4;
+    --sky-deep:#4F7385;
+    --pink:#E3A2AC;
+    --pink-deep:#BE7280;
+    --mint:#A7C199;
+    --butter:#E6C98A;
+    --ink:#2C2A26;
+    --ink-soft:#66625A;
+    --line:#E0D9C9;
+    --bot-bubble:#ECE7D9;
+    --user-bubble:#F1DADE;
+    --card:#FFFDF7;
+    --shadow:18px 22px 44px -26px rgba(60,52,40,.30);
+    --focus:#BE7280;
+    --backdrop-1:#E1E9EA;
+    --backdrop-2:#F0E2E0;
+    --backdrop-3:#E6ECDD;
   }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --cream:#2A2430; --milk:#332C3A; --card:#332C3A;
-      --ink:#F3E9EF; --ink-soft:#C6B4C0; --line:#443B4E;
-      --bot-bubble:#3A4552; --user-bubble:#4E3140;
-      --sky:#7FBEDC; --pink:#FF9FBB; --mint:#8FD3AC;
-      --backdrop-1:#2E3A44; --backdrop-2:#3A2A34; --backdrop-3:#28342C;
-      --shadow:26px 30px 70px -30px rgba(0,0,0,.6);
-    }
-  }
+  /* 預設一律明亮；深色僅在使用者按 🌙（data-theme="dark"）時套用 */
   :root[data-theme="light"]{
-    --cream:#FBF6EF; --milk:#FFFFFF; --card:#FFFFFF;
-    --ink:#5C4A44; --ink-soft:#8B7A73; --line:#EFE4D8;
-    --bot-bubble:#EAF6FB; --user-bubble:#FFDCE6;
-    --backdrop-1:#DCF0F7; --backdrop-2:#FDEAF0; --backdrop-3:#EAF7EE;
-    --shadow:26px 30px 60px -30px rgba(120,90,80,.45);
+    --cream:#F5F1E8; --milk:#FFFFFF; --card:#FFFDF7;
+    --ink:#2C2A26; --ink-soft:#66625A; --line:#E0D9C9;
+    --bot-bubble:#ECE7D9; --user-bubble:#F1DADE;
+    --sky:#9BB6C4; --sky-deep:#4F7385; --pink:#E3A2AC; --pink-deep:#BE7280; --mint:#A7C199; --butter:#E6C98A;
+    --backdrop-1:#E1E9EA; --backdrop-2:#F0E2E0; --backdrop-3:#E6ECDD;
+    --shadow:18px 22px 44px -26px rgba(60,52,40,.30); --focus:#BE7280;
   }
   :root[data-theme="dark"]{
-    --cream:#2A2430; --milk:#332C3A; --card:#332C3A;
-    --ink:#F3E9EF; --ink-soft:#C6B4C0; --line:#443B4E;
-    --bot-bubble:#3A4552; --user-bubble:#4E3140;
-    --backdrop-1:#2E3A44; --backdrop-2:#3A2A34; --backdrop-3:#28342C;
-    --shadow:26px 30px 70px -30px rgba(0,0,0,.6);
+    --cream:#222528; --milk:#2A2E32; --card:#2A2E32;
+    --ink:#F0ECE1; --ink-soft:#B4AEA1; --line:#3A4046;
+    --bot-bubble:#323941; --user-bubble:#42323A;
+    --sky:#9BB6C4; --sky-deep:#B0CDDC; --pink:#E3A2AC; --pink-deep:#E3A2AC; --mint:#A7C199; --butter:#E6C98A;
+    --backdrop-1:#28323A; --backdrop-2:#33282E; --backdrop-3:#28312A;
+    --shadow:18px 22px 50px -26px rgba(0,0,0,.6); --focus:#E3A2AC;
   }
 
   *{box-sizing:border-box;}
@@ -81,8 +74,7 @@
 
   /* 手機外框 */
   .phone{position:relative; z-index:1; width:min(420px,100%); margin:0 auto;}
-  .screen{background:var(--cream); border:2px solid var(--line); border-radius:26px;
-    overflow:hidden; display:flex; flex-direction:column; height:640px; box-shadow:var(--shadow);}
+  .screen{background:transparent; overflow:hidden; display:flex; flex-direction:column; height:640px;}
 
   .appbar{display:flex; align-items:center; gap:10px; padding:6px 18px 12px;}
   .avatar{width:42px; height:42px; border-radius:50%; display:grid; place-items:center; font-size:24px;
@@ -90,8 +82,10 @@
   .appbar .name{font-size:16px; font-weight:700;}
   .appbar .status{font-size:11px; color:var(--ink-soft); display:flex; align-items:center; gap:5px;}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 3px color-mix(in srgb,var(--mint) 40%,transparent);}
-  .theme-btn{margin-left:auto; border:2px solid var(--line); background:var(--milk); color:var(--ink);
-    width:38px;height:38px;border-radius:50%; cursor:pointer; font-size:16px;}
+  .theme-btn{position:fixed; top:16px; right:16px; z-index:30; border:2px solid var(--line);
+    background:var(--card); color:var(--ink); width:42px;height:42px;border-radius:50%;
+    cursor:pointer; font-size:17px; box-shadow:var(--shadow);}
+  .theme-btn:focus-visible{outline:3px solid var(--focus); outline-offset:2px;}
 
   .chat{flex:1; overflow-y:auto; padding:8px 16px 16px; display:flex; flex-direction:column; gap:12px;
     scroll-behavior:smooth;}
@@ -186,6 +180,8 @@
     <span class="blob" style="top:40%;right:3%;">🍼</span>
   </div>
 
+  <button class="theme-btn" id="themeBtn" title="切換明亮／深色模式" aria-label="切換明亮／深色模式">🌙</button>
+
   <div class="head">
     <span class="badge">🐻 互動原型 · 引導式對話</span>
     <h1>寶寶食譜小幫手</h1>
@@ -194,14 +190,6 @@
 
   <div class="phone">
     <div class="screen">
-      <div class="appbar">
-        <div class="avatar">🐻</div>
-        <div>
-          <div class="name">寶寶食譜小幫手</div>
-          <div class="status"><span class="dot"></span>線上 · 安全把關中</div>
-        </div>
-        <button class="theme-btn" id="themeBtn" title="切換日夜模式" aria-label="切換日夜模式">🌙</button>
-      </div>
       <div class="chat" id="chat" aria-live="polite"></div>
     </div>
   </div>
@@ -664,6 +652,7 @@ themeBtn.onclick=()=>{
   document.documentElement.setAttribute('data-theme', dark?'dark':'light');
   themeBtn.textContent = dark?'☀️':'🌙';
 };
+document.documentElement.setAttribute('data-theme','light'); themeBtn.textContent='🌙';
 document.getElementById('restart').onclick=start;
 start();
 </script>
