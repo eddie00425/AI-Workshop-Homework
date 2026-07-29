@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日進度報告 - 2026-07-29</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-green-bg: rgba(16, 185, 129, 0.12);
+      --accent-blue: #3b82f6;
+      --accent-blue-bg: rgba(59, 130, 246, 0.12);
+      --accent-amber: #f59e0b;
+      --accent-amber-bg: rgba(245, 158, 11, 0.12);
+      --accent-purple: #8b5cf6;
+      --accent-purple-bg: rgba(139, 92, 246, 0.12);
+      --radius: 14px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2.5rem 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .header-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple));
+    }
+
+    .date-badge {
+      display: inline-block;
+      background-color: var(--accent-blue-bg);
+      color: var(--accent-blue);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 0.25rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.025em;
+    }
+
+    .summary-text {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    .section {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section-header h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .icon-pill {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .icon-green { background: var(--accent-green-bg); color: var(--accent-green); }
+    .icon-amber { background: var(--accent-amber-bg); color: var(--accent-amber); }
+    .icon-blue { background: var(--accent-blue-bg); color: var(--accent-blue); }
+    .icon-purple { background: var(--accent-purple-bg); color: var(--accent-purple); }
+
+    .item-group-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.85rem;
+    }
+
+    .task-card {
+      background-color: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .task-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .task-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .task-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+    }
+
+    .task-title-area {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .task-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .tag-pill {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .tag-green { background: var(--accent-green-bg); color: var(--accent-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .tag-amber { background: var(--accent-amber-bg); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .tag-blue { background: var(--accent-blue-bg); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); }
+    .tag-meta { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+    .detail-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      border-left: 3px solid var(--accent-blue);
+    }
+
+    .detail-grid.completed-grid {
+      border-left-color: var(--accent-green);
+    }
+
+    .detail-grid.progress-grid {
+      border-left-color: var(--accent-amber);
+    }
+
+    .detail-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: baseline;
+      font-size: 0.95rem;
+    }
+
+    .detail-label {
+      font-weight: 700;
+      color: var(--accent-blue);
+      min-width: 75px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .detail-label.green-label { color: var(--accent-green); }
+    .detail-label.amber-label { color: var(--accent-amber); }
+
+    .detail-value {
+      flex: 1;
+      color: #e2e8f0;
+    }
+
+    .pending-hint {
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-left: 0.3rem;
+      font-style: italic;
+    }
+
+    .footer-note {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- 頁頭與總結 -->
+    <div class="header-card">
+      <span class="date-badge">2026-07-29 每日進度報告</span>
+      <h1>今日工作摘要</h1>
+      <p class="summary-text">今日順利完成 2 項完成項目（AT banner-amy 與 LBC bannerX10-Joy），並持續推進 3 項進行中項目（燈箱-jason、網頁素材圖加工與 AI 工作坊作業）。</p>
+    </div>
+
+    <!-- 今天完成的事 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon-pill icon-green">✓</div>
+        <h2>今天完成的事 (完成項目)</h2>
+      </div>
+
+      <div class="item-group-title">Banner 視覺設計</div>
+      
+      <!-- 卡片 1 -->
+      <div class="task-card">
+        <div class="task-header">
+          <div class="task-title-area">
+            <span class="tag-pill tag-green">完成項目</span>
+            <span class="task-name">AT banner-amy</span>
+          </div>
+          <span class="tag-pill tag-meta">負責人: 家綺</span>
+        </div>
+        <div class="detail-grid completed-grid">
+          <div class="detail-row">
+            <span class="detail-label green-label">卡片內容</span>
+            <span class="detail-value">進行 AT banner 視覺設計與排版製作。<span class="pending-hint">(詳細說明：待補)</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label green-label">結果</span>
+            <span class="detail-value">完成 AT banner 設計製作，結果已確認交付。</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 卡片 2 -->
+      <div class="task-card">
+        <div class="task-header">
+          <div class="task-title-area">
+            <span class="tag-pill tag-green">完成項目</span>
+            <span class="task-name">LBC bannerX10-Joy</span>
+          </div>
+        </div>
+        <div class="detail-grid completed-grid">
+          <div class="detail-row">
+            <span class="detail-label green-label">卡片內容</span>
+            <span class="detail-value">進行 10 組 LBC banner 視覺橫幅設計與尺寸調整。<span class="pending-hint">(詳細說明：待補)</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label green-label">結果</span>
+            <span class="detail-value">完成 10 組 LBC banner 視覺橫幅設計製作，結果已全數產出。</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 遇到的問題與卡點 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon-pill icon-amber">!</div>
+        <h2>遇到的問題與卡點</h2>
+      </div>
+      <div class="task-card">
+        <div class="detail-grid">
+          <div class="detail-row">
+            <span class="detail-label amber-label">狀態</span>
+            <span class="detail-value">無重大問題</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 明天的計劃 (進行中項目) -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon-pill icon-blue">→</div>
+        <h2>明天的計劃 (進行中項目)</h2>
+      </div>
+
+      <!-- 進行中 1 -->
+      <div class="task-card">
+        <div class="task-header">
+          <div class="task-title-area">
+            <span class="tag-pill tag-amber">進行項目</span>
+            <span class="task-name">燈箱-jason</span>
+          </div>
+          <span class="tag-pill tag-meta">需求期限: 2026-07-31</span>
+        </div>
+        <div class="detail-grid progress-grid">
+          <div class="detail-row">
+            <span class="detail-label amber-label">卡片內容</span>
+            <span class="detail-value">進行燈箱視覺圖檔設計與尺寸修訂。<span class="pending-hint">(詳細說明：待補)</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label amber-label">結果 / 進度</span>
+            <span class="detail-value">進行中，持續推進燈箱視覺設計與修正作業。</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 進行中 2 -->
+      <div class="task-card">
+        <div class="task-header">
+          <div class="task-title-area">
+            <span class="tag-pill tag-amber">進行項目</span>
+            <span class="task-name">網頁素材圖加工</span>
+          </div>
+          <div style="display: flex; gap: 0.4rem;">
+            <span class="tag-pill tag-meta">負責人: 冠甫</span>
+            <span class="tag-pill tag-meta">需求期限: 2026-07-31</span>
+          </div>
+        </div>
+        <div class="detail-grid progress-grid">
+          <div class="detail-row">
+            <span class="detail-label amber-label">卡片內容</span>
+            <span class="detail-value">執行網頁素材圖片修圖、去背與加工處理。<span class="pending-hint">(詳細說明：待補)</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label amber-label">結果 / 進度</span>
+            <span class="detail-value">進行中，持續執行網頁素材圖片加工與編飾工作。</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 進行中 3 -->
+      <div class="task-card">
+        <div class="task-header">
+          <div class="task-title-area">
+            <span class="tag-pill tag-amber">進行項目</span>
+            <span class="task-name">AI工作坊作業</span>
+          </div>
+        </div>
+        <div class="detail-grid progress-grid">
+          <div class="detail-row">
+            <span class="detail-label amber-label">卡片內容</span>
+            <span class="detail-value">準備並執行 AI 工作坊作業相關任務與練習。<span class="pending-hint">(詳細說明：待補)</span></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label amber-label">結果 / 進度</span>
+            <span class="detail-value">進行中，準備進行 AI 工作坊作業實作與測試。</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 輸入內容分析與建議 -->
+    <div class="section">
+      <div class="section-header">
+        <div class="icon-pill icon-purple">✦</div>
+        <h2>輸入內容分析與優化建議</h2>
+      </div>
+      <div class="task-card">
+        <div class="detail-grid">
+          <div class="detail-row">
+            <span class="detail-label">建議 1</span>
+            <span class="detail-value"><strong>卡片內容說明</strong>：目前 Trello 卡片描述大多空白，建議在卡片內補充「卡片內容」與「預期結果」，避免自動生成時標示「待補」。</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">建議 2</span>
+            <span class="detail-value"><strong>負責人/工時標籤</strong>：可統一為每張卡片加上負責人標籤與預估工時，便於權責區分與回溯。</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">建議 3</span>
+            <span class="detail-value"><strong>成果產出連結</strong>：建議在卡片中附上設計稿件或成果連結，便於報告點擊檢視。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      自動生成於 2026-07-29 | 依據《日報規格spec》產生
+    </div>
+
+  </div>
+
+</body>
+</html>
