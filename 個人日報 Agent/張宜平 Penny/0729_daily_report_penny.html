@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026-07-29 📊🔧</title>
+<style>
+  :root{
+    --bg:#f6f6f4; --panel:#fff; --ink:#1c1b19; --mut:#736f6a;
+    --line:#e5e2dd; --acc:#b5551f; --acc-soft:#f2e6dd;
+    --good:#3f7d53; --mid:#8a7f4e; --bad:#b04a3f;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#161513; --panel:#201f1c; --ink:#eceae6; --mut:#a09a92;
+      --line:#332f2b; --acc:#e0824b; --acc-soft:#3a2a20;
+      --good:#7fbe92; --mid:#c9b877; --bad:#e08a7e;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:40px 20px 64px; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:780px;margin:0 auto}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:28px}
+  .kicker{font-size:12px;letter-spacing:.22em;color:var(--mut);text-transform:uppercase;margin:0 0 10px;
+          display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .kicker .sp{color:var(--acc);font-weight:700;letter-spacing:.1em}
+  h1{margin:0;font-size:38px;line-height:1.15;letter-spacing:-.02em;font-weight:700}
+  h1 small{display:block;font-size:15px;font-weight:500;color:var(--mut);letter-spacing:0;margin-top:8px}
+
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 0}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;min-width:88px}
+  .stat b{display:block;font-size:22px;line-height:1.2;font-variant-numeric:tabular-nums}
+  .stat span{font-size:11.5px;color:var(--mut);letter-spacing:.06em}
+  .stat.good b{color:var(--good)} .stat.mid b{color:var(--mid)} .stat.bad b{color:var(--bad)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0}
+  .chip{background:var(--acc-soft);color:var(--acc);border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:600}
+
+  .summary{background:var(--panel);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;
+           padding:16px 20px;margin:28px 0;font-size:16.5px}
+  .summary p{margin:0}
+  .summary p+p{margin-top:10px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:0 0 14px}
+  .card h2{margin:0 0 12px;font-size:15px;letter-spacing:.04em;color:var(--mut);
+           display:flex;align-items:center;gap:8px;font-weight:700}
+  .ico{font-size:15px}
+  .card ul{margin:0;padding-left:20px}
+  .card li{margin:0 0 8px}
+  .card li:last-child{margin-bottom:0}
+  .proj{background:var(--acc-soft);color:var(--acc);border-radius:5px;padding:1px 7px;
+        font-size:12.5px;font-weight:700;margin-right:7px;white-space:nowrap}
+  .why{display:block;font-size:14.5px;color:var(--mut);margin-top:4px}
+  .note{margin:12px 0 0;font-size:12.5px;color:var(--mut);font-style:italic}
+
+  ul.board-list{list-style:none;padding:0}
+  ul.board-list li{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+                   padding:7px 0;border-bottom:1px dashed var(--line)}
+  ul.board-list li:last-child{border-bottom:0}
+  .list{background:var(--ink);color:var(--bg);border-radius:5px;padding:1px 8px;
+        font-size:11.5px;font-weight:700;white-space:nowrap}
+  .prog{margin-left:auto;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums;
+        border:1px solid var(--line);border-radius:999px;padding:0 9px;white-space:nowrap}
+  .prog.up{color:var(--good);border-color:var(--good);font-weight:700}
+
+  ul.meet{list-style:none;padding:0}
+  ul.meet li{border-left:2px solid var(--line);padding:2px 0 2px 14px;margin-bottom:12px}
+  ul.meet time{display:block;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums;letter-spacing:.03em}
+  ul.meet b{font-weight:600}
+  ul.meet .res{display:block;font-size:14px;color:var(--mut);margin-top:2px}
+
+  ul.todo{list-style:none;padding:0}
+  ul.todo li{padding-left:26px;position:relative;margin-bottom:8px}
+  ul.todo li::before{content:"";position:absolute;left:0;top:.5em;width:14px;height:14px;
+                     border:1.5px solid var(--mut);border-radius:4px}
+
+  .card.risk{border-color:var(--bad)}
+  .card.risk h2{color:var(--bad)}
+
+  footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);
+         font-size:12px;color:var(--mut);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+
+  @media print{body{background:#fff;padding:0}.card,.summary{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker"><span>Daily Log</span><span class="sp">S182</span></p>
+    <h1>2026-07-29<small>🗓️三</small></h1>
+    <div class="stats">
+      <div class="stat"><b>6</b><span>✅</span></div>
+      <div class="stat"><b>1</b><span>🗣️</span></div>
+      <div class="stat"><b>2</b><span>📌明日</span></div>
+      <div class="stat"><b>7</b><span>⏱️</span></div>
+      <div class="stat mid"><b>😐</b><span>📊</span></div>
+    </div>
+    <div class="chips">
+      <span class="chip">🤖🏕️</span>
+      <span class="chip">📊🔧</span>
+      <span class="chip">🎨🧩</span>
+      <span class="chip">🧊👁️</span>
+      <span class="chip">🍽️🔨</span>
+    </div>
+  </header>
+
+  <div class="summary">
+    <p>整天在 🎯 的「2026 🤖🏕️」，📖 是《📘 — 從會用 🤖，到用 🤖 工作》。跟著實作了 🎁 和 🦾 兩個🧱。<b>今天要交的 🎓 是產出一個 🍽️ 相關的 🔨，❓ 還沒定，這是今天最急的事。</b></p>
+    <p>同一天把自己的 📊🔧 從零架起來，接上 📅 與 💬，📌 改走 📸。從今天這份開始，📝 會固定落在 🗄️。</p>
+  </div>
+
+  <section class="card">
+    <h2><span class="ico">✅</span>今日 ✅</h2>
+    <ul>
+      <li><b class="proj">🤖🏕️</b>參加整天🏕️ 9:30–17:00，跟著 📖 實作 → 完成 🎁 與 🦾 兩個實作🧱</li>
+      <li><b class="proj">📊🔧</b>把📏寫成 <code>daily-log</code> 🎁（🔀、🧬、📥規格、兩份🖼️）→ 📏從口頭交代變成一包可安裝的📁</li>
+      <li><b class="proj">📊🔧</b>定出 📄 九段式 🧬 與 🌐 🖼️ → 每天兩份📤，🔤固定可 grep</li>
+      <li><b class="proj">📊🔧</b>接上 📅 與 💬（cathaybkued）→ 📅與自己發的 ✉️ 可自動抓</li>
+      <li><b class="proj">📊🔧</b>建立 <code>🔖.md</code>（📦對照／⚖️／未收線頭）→ 未來查「某段⏳做了什麼」不用翻整年📁</li>
+      <li><b class="proj">📊🔧</b>🗄️收斂成 <code>🗃️/</code>、<code>📓/</code>、<code>🔖.md</code> 三樣，全部歸到 <code>Documents/Claude/</code> 底下 → 📏住 🎁、📇住 🗄️，兩邊徹底分開</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2><span class="ico">🔄</span>進行中</h2>
+    <ul>
+      <li><b class="proj">🍽️🔨</b>🏕️<b>今天</b>的 🎓，要產出一個 🍽️ 相關的 🔨。卡在還沒定❓——做什麼、給誰用都還沒決定。</li>
+      <li><b class="proj">🎨🧩</b>📱 ☑️ 0/9，今天沒動。</li>
+      <li><b class="proj">🎨🧩</b>🤖📱 ☑️ 4/8，剩一半。</li>
+      <li><b class="proj">🧊👁️</b>☑️ 3/5。</li>
+    </ul>
+  </section>
+
+  <section class="card board">
+    <h2><span class="ico">📋</span>📋 📊</h2>
+    <ul class="board-list">
+      <li><b class="list">Doing</b>[S182] 2026 🤖🏕️</li>
+      <li><b class="list">Doing</b>[S182] [🎨QA] [📱] 🧩調整 <span class="prog">0/9</span></li>
+      <li><b class="list">Doing</b>[S182] 🧊👁️ <span class="prog">3/5</span></li>
+      <li><b class="list">Doing</b>[S182] [🎨QA] [🤖📱] 🧩調整 <span class="prog">4/8</span></li>
+    </ul>
+    <p class="note">📸僅涵蓋 4/32 張；首次建📁，無前一日可比對</p>
+  </section>
+
+  <section class="card">
+    <h2><span class="ico">📅</span>🗣️與🚶</h2>
+    <ul class="meet">
+      <li>
+        <time>09:30 – 17:00</time>
+        <b>【🎯】2026 🤖🏕️｜🤖 就是你的🎒</b>
+        <span class="res">與 🎯 👥（主辦：🧑，13F 🛋️）<br>🔚：完成 🎁、🦾 實作，🍽️🔨 作業待交</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2><span class="ico">⚖️</span>⚖️與💡</h2>
+    <ul>
+      <li><b class="proj">📊🔧</b>📄 當主📁、🌐 當衍生📁。
+        <span class="why">💡：📄 有固定 🏷️ 和🔠，🦾 能直接 grep 出某📦或某⚖️；🌐 純粹給人看，壞了隨時能從主📁重生，不必兩邊維護。</span></li>
+      <li><b class="proj">📊🔧</b>📏寫進📁，不是每次口述交代。
+        <span class="why">💡：📏變成📁之後，要調整就是改📁，不是重講一遍。這是今天🏕️最核心的一件事。</span></li>
+      <li><b class="proj">📊🔧</b><code>AGENTS.md</code> 當唯一真相，<code>CLAUDE.md</code> 只放一行指標。
+        <span class="why">💡：📕 讀前者、🔶 讀後者，兩邊各寫一份📏必然會走鐘。</span></li>
+      <li><b class="proj">📊🔧</b>📌 改走 📸 而非 🔌。
+        <span class="why">💡：👤沒有 🔌 🔑。意外的好處是 📸 裡的 ☑️ 📈數字，比口述更硬——跨天比對就知道實際推進了多少。</span></li>
+      <li><b class="proj">📊🔧</b><code>raw/</code> 原始🧾保留 7 天後自動清。
+        <span class="why">💡：留一週的可重跑🪟，又不讓未過濾的 💬 原✉️永久堆在💾上。</span></li>
+    </ul>
+  </section>
+
+  <section class="card risk">
+    <h2><span class="ico">⚠️</span>🚧與⚠️</h2>
+    <ul>
+      <li><b class="proj">🍽️🔨</b><b>今天就要交，但還沒定❓。</b>🏕️ 17:00 結束，剩下的⏳要同時完成定❓和實作，是今天最大的⚠️。</li>
+      <li><b class="proj">📊🔧</b>💬 第二個 🏢（<code>dwillberich</code>，含 D匯貴 📻）接不進來，🔗只綁單一 🏢。那邊的📃目前只能靠口述或 📸。</li>
+      <li><b class="proj">📊🔧</b>🤖 對話🎙️無法自動分析。用的是🌐版 🔶 / 📕，💻沒有🎙️。改用 ⌨️ 版才能自動化。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2><span class="ico">🎯</span>明天要做</h2>
+    <ul class="todo">
+      <li><b class="proj">📊🔧</b>跑第二次📓，驗證「已存在就合併、不覆蓋」與「📋跨天比對」是否正常</li>
+      <li><b class="proj">🎨🧩</b>📱 那條線 0/9 完全沒動，該起頭了</li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>來源：📅・💬・📋📸・口述　·　<code>worklog/🗃️/0729_daily_report_penny.md</code></span>
+    <span>依 daily-log 🎁 📏產生</span>
+  </footer>
+
+</div>
+</body>
+</html>
