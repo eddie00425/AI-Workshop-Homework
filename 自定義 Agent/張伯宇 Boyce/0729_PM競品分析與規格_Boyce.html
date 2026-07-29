@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Trello、Asana、Linear 的 subtask 競品分析與規格草稿">
+  <title>Subtask 競品分析與規格草稿</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --surface-subtle: #f8f9fb;
+      --text: #17202a;
+      --muted: #5d6773;
+      --border: #d9dee5;
+      --accent: #145ea8;
+      --accent-soft: #e9f2fb;
+      --warning: #785500;
+      --warning-bg: #fff7dd;
+      --radius: 8px;
+      --space-1: .25rem;
+      --space-2: .5rem;
+      --space-3: .75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111418;
+        --surface: #191e24;
+        --surface-subtle: #20262d;
+        --text: #edf1f5;
+        --muted: #abb5c0;
+        --border: #39424c;
+        --accent: #78b7f2;
+        --accent-soft: #173451;
+        --warning: #ffd977;
+        --warning-bg: #3b300f;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.65;
+    }
+
+    a {
+      color: var(--accent);
+      text-underline-offset: .18em;
+    }
+
+    a:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    header,
+    main,
+    footer {
+      width: min(100% - 2rem, 1120px);
+      margin-inline: auto;
+    }
+
+    header { padding-block: var(--space-8) var(--space-5); }
+
+    h1, h2, h3 {
+      line-height: 1.25;
+      letter-spacing: -.015em;
+    }
+
+    h1 { margin: 0 0 var(--space-2); font-size: clamp(1.75rem, 4vw, 2.5rem); }
+    h2 { margin: 0 0 var(--space-5); font-size: 1.5rem; }
+    h3 { margin: var(--space-6) 0 var(--space-3); font-size: 1.08rem; }
+    p { margin: 0 0 var(--space-4); }
+    ul, ol { margin-block: var(--space-2) var(--space-4); padding-left: 1.4rem; }
+    li + li { margin-top: var(--space-1); }
+
+    .meta {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-5);
+    }
+
+    nav a {
+      display: inline-block;
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    nav a:hover { background: var(--accent-soft); }
+
+    section {
+      margin-bottom: var(--space-6);
+      padding: var(--space-6);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .notice {
+      padding: var(--space-4);
+      border-left: 4px solid var(--warning);
+      background: var(--warning-bg);
+      color: var(--text);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-block: var(--space-3) var(--space-5);
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+      font-size: .94rem;
+    }
+
+    th, td {
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-subtle);
+      font-weight: 700;
+    }
+
+    code {
+      padding: .08em .3em;
+      border-radius: 4px;
+      background: var(--surface-subtle);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: .92em;
+    }
+
+    .gap {
+      padding-block: var(--space-3);
+      border-top: 1px solid var(--border);
+    }
+
+    .gap:first-of-type { border-top: 0; }
+
+    .label {
+      display: inline-block;
+      margin-bottom: var(--space-3);
+      padding: var(--space-1) var(--space-2);
+      border-radius: 4px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .brief > h2 {
+      padding-bottom: var(--space-3);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .brief dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: var(--space-2) var(--space-4);
+      margin: 0;
+    }
+
+    .brief dt { font-weight: 700; }
+    .brief dd { margin: 0; }
+
+    footer {
+      padding-block: var(--space-4) var(--space-8);
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    @media (max-width: 600px) {
+      header, main, footer { width: min(100% - 1rem, 1120px); }
+      header { padding-top: var(--space-6); }
+      section { padding: var(--space-4); }
+      nav a { flex: 1 1 46%; text-align: center; }
+      .brief dl { grid-template-columns: 1fr; gap: 0; }
+      .brief dd { margin-bottom: var(--space-3); }
+    }
+
+    @media print {
+      :root {
+        color-scheme: light;
+        --bg: #fff;
+        --surface: #fff;
+        --surface-subtle: #f5f5f5;
+        --text: #000;
+        --muted: #444;
+        --border: #bbb;
+        --accent: #000;
+        --accent-soft: #eee;
+      }
+
+      body { background: #fff; font-size: 10pt; }
+      header, main, footer { width: 100%; }
+      header { padding-top: 0; }
+      nav { display: none; }
+      section { border: 0; padding: 0; }
+      .brief { break-before: page; }
+      a { color: #000; overflow-wrap: anywhere; }
+      .table-wrap { overflow: visible; }
+      table { min-width: 0; font-size: 8.5pt; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Subtask 競品分析與規格草稿</h1>
+    <p class="meta">Trello · Asana · Linear｜查閱日期：2026-07-29</p>
+    <nav aria-label="報告目錄">
+      <a href="#comparison">功能對照</a>
+      <a href="#gaps">我方缺口</a>
+      <a href="#spec">規格草稿</a>
+      <a href="#trello">Trello Brief</a>
+      <a href="#asana">Asana Brief</a>
+      <a href="#linear">Linear Brief</a>
+    </nav>
+  </header>
+
+  <main>
+    <section aria-labelledby="context-title">
+      <h2 id="context-title">研究範圍</h2>
+      <p>目標使用者透過 subtask 拆解任務細節。我方產品目前沒有 subtask，但既有 task 已有狀態、負責人與截止日。[O1]</p>
+      <p class="notice"><strong>證據界線：</strong>競品事實只採官方來源直接呈現的內容；「未能確認」不代表功能不存在。規格段落屬我方提案，不是競品事實。</p>
+    </section>
+
+    <section id="comparison" aria-labelledby="comparison-title">
+      <h2 id="comparison-title">1. 功能對照表</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">功能面向</th>
+              <th scope="col">Trello</th>
+              <th scope="col">Asana</th>
+              <th scope="col">Linear</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">資料模型</th>
+              <td>Card 內的 checklist item；可轉成獨立 card。[T1]</td>
+              <td>嵌在父 task 內的獨立 task，具有相同欄位。[A1]</td>
+              <td>Sub-issue 與另一個 issue 建立 parent 關係。[L1]</td>
+            </tr>
+            <tr>
+              <th scope="row">建立入口</th>
+              <td>Card → Checklist → Add an item。[T1]</td>
+              <td>Task details pane → Subtasks；亦支援右鍵或 <code>Tab+S</code>。[A1]</td>
+              <td>Parent issue → <code>+ Add sub-issues</code>；亦支援 command menu。[L1]</td>
+            </tr>
+            <tr>
+              <th scope="row">完成狀態</th>
+              <td>使用 checkbox 完成，並顯示數量與完成比例。[T1]</td>
+              <td>Subtask 獨立完成；父 task 完成不會自動完成 subtasks。[A1]</td>
+              <td>Issue 具有 status；父子自動關閉可由團隊選擇設定。[L1][L2]</td>
+            </tr>
+            <tr>
+              <th scope="row">負責人／截止日</th>
+              <td>Advanced Checklist 可設定一位負責人與截止日。[T2]</td>
+              <td>Task 模型包含 assignee、完成狀態與 due date。[A1][A2]</td>
+              <td>Assignee 可在特定條件下繼承；sub-issue 截止日行為未能從查閱頁面直接確認。[L1]</td>
+            </tr>
+            <tr>
+              <th scope="row">多層結構</th>
+              <td>未能確認。</td>
+              <td>最多 5 層 subtasks。[A1]</td>
+              <td>未能確認最大層數。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="gaps" aria-labelledby="gaps-title">
+      <h2 id="gaps-title">2. 我方缺口</h2>
+      <article class="gap">
+        <h3>缺口 1：缺少父子任務關係</h3>
+        <p><strong>我方現況：</strong>目前 task 沒有 subtask。[O1]</p>
+        <p><strong>競品證據：</strong>Asana 使用 parent task／subtask，Linear 使用 parent issue／sub-issue；Trello 提供 card 內 checklist item。[T1][A1][L1]</p>
+        <p><strong>差距：</strong>使用者無法在一個任務內建立可追蹤的細分工作。</p>
+      </article>
+      <article class="gap">
+        <h3>缺口 2：缺少任務內拆解入口與進度摘要</h3>
+        <p><strong>我方現況：</strong>沒有已確認的 subtask 建立入口或進度摘要。[O1]</p>
+        <p><strong>競品證據：</strong>三者都從父工作項目的詳細頁面提供入口；Trello 另顯示項目數與完成比例。[T1][A1][L1]</p>
+        <p><strong>差距：</strong>使用者無法在查看父任務時直接拆解工作並掌握完成程度。</p>
+      </article>
+      <article class="gap">
+        <h3>缺口 3：既有欄位無法套用至細分工作</h3>
+        <p><strong>我方現況：</strong>Task 已有狀態、負責人與截止日，但沒有 subtask 可承載。[O1]</p>
+        <p><strong>競品證據：</strong>Asana subtask 使用 task 欄位；Trello advanced checklist 支援負責人與截止日；Linear sub-issue 支援 status 與條件式 assignee 繼承。[T2][A1][A2][L1]</p>
+        <p><strong>差距：</strong>任務拆解後無法分別指派、排程或追蹤。</p>
+      </article>
+    </section>
+
+    <section id="spec" aria-labelledby="spec-title">
+      <span class="label">提案</span>
+      <h2 id="spec-title">3. 規格草稿</h2>
+      <h3>User story</h3>
+      <p>作為任務負責人，我希望能在任務內建立 subtask，並分別設定狀態、負責人與截止日，以便拆解工作細節並追蹤各部分進度。</p>
+      <p class="meta">證據依據：[T1][T2][A1][A2][L1][O1]</p>
+
+      <h3>AC1：建立 subtask</h3>
+      <ul>
+        <li><strong>Given：</strong>使用者有權編輯一筆 task。</li>
+        <li><strong>When：</strong>在 task 詳細頁選擇「新增 subtask」並輸入名稱。</li>
+        <li><strong>Then：</strong>建立 subtask，顯示於父 task 的 subtask 區塊並保留父子關係。</li>
+      </ul>
+
+      <h3>AC2：管理 subtask 欄位</h3>
+      <ul>
+        <li><strong>Given：</strong>父 task 已有一筆 subtask。</li>
+        <li><strong>When：</strong>使用者開啟或編輯該 subtask。</li>
+        <li><strong>Then：</strong>可設定名稱、狀態、負責人及截止日。</li>
+      </ul>
+
+      <h3>AC3：顯示父子脈絡</h3>
+      <ul>
+        <li><strong>Given：</strong>使用者正在查看 subtask。</li>
+        <li><strong>When：</strong>subtask 詳細資料開啟。</li>
+        <li><strong>Then：</strong>畫面顯示其父 task，並允許返回父 task。</li>
+      </ul>
+
+      <h3>AC4：顯示完成進度</h3>
+      <ul>
+        <li><strong>Given：</strong>父 task 包含一筆以上 subtask。</li>
+        <li><strong>When：</strong>任一 subtask 的狀態改變。</li>
+        <li><strong>Then：</strong>父 task 顯示已完成數量、總數及完成比例。</li>
+      </ul>
+
+      <h3>AC5：父子狀態不自動連動</h3>
+      <ul>
+        <li><strong>Given：</strong>父 task 包含未完成或已完成的 subtasks。</li>
+        <li><strong>When：</strong>完成父 task 或全部 subtasks。</li>
+        <li><strong>Then：</strong>系統不自動改變另一方狀態，父 task 狀態由使用者明確設定。</li>
+      </ul>
+
+      <h3>未決事項</h3>
+      <ul>
+        <li>是否允許 subtask 再建立下一層。</li>
+        <li>是否允許 task 與 subtask 互相轉換。</li>
+        <li>是否支援批次貼上多筆 subtask。</li>
+        <li>實際入口位置仍需搭配我方 task details 畫面確認。</li>
+      </ul>
+    </section>
+
+    <section id="trello" class="brief" aria-labelledby="trello-title">
+      <h2 id="trello-title">Trello｜Checklist／Advanced Checklist</h2>
+      <h3>1. 產品與功能名稱</h3>
+      <dl>
+        <dt>產品</dt><dd>Trello</dd>
+        <dt>功能</dt><dd>Checklist／Advanced Checklist</dd>
+        <dt>查閱日期</dt><dd>2026-07-29</dd>
+      </dl>
+      <h3>2. 功能所在頁面</h3>
+      <dl>
+        <dt>頁面</dt><dd>Card details</dd>
+        <dt>入口</dt><dd>Checklist</dd>
+        <dt>平台</dt><dd>官方文件未逐平台驗證</dd>
+      </dl>
+      <h3>3. 起點及操作路徑</h3>
+      <ol>
+        <li>開啟 board 中的 card。</li>
+        <li>選擇 <code>Checklist</code> 並建立清單。</li>
+        <li>選擇 <code>Add an item</code> 建立細分項目。[T1]</li>
+      </ol>
+      <h3>4. 畫面呈現與可觀察行為</h3>
+      <p>Checklist item 可用 checkbox 標記完成；card 正面顯示項目數，詳細頁顯示完成百分比。[T1]</p>
+      <p>Advanced Checklist 可設定一位負責人與截止日；被指派項目會出現在 Home 的 <code>Your Items</code>。[T2]</p>
+      <h3>5. 網址／截圖</h3>
+      <ul>
+        <li>[T1] <a href="https://support.atlassian.com/trello/docs/adding-checklists-to-cards/" target="_blank" rel="noopener noreferrer">Add, delete, and manage checklists</a></li>
+        <li>[T2] <a href="https://support.atlassian.com/trello/docs/how-to-use-advanced-checklists-to-set-due-dates/" target="_blank" rel="noopener noreferrer">Set due dates for checklist items</a></li>
+      </ul>
+      <h3>6. 來源資訊</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>編號</th><th>類型</th><th>名稱</th><th>查閱日期</th></tr></thead>
+          <tbody>
+            <tr><td>T1</td><td>官方文件</td><td>Add, delete, and manage checklists</td><td>2026-07-29</td></tr>
+            <tr><td>T2</td><td>官方文件</td><td>Set due dates for checklist items</td><td>2026-07-29</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>7. 無法確認的限制</h3>
+      <ul>
+        <li>對應模型是 checklist item，不是已確認的完整 parent-task／subtask 模型。</li>
+        <li>兩份官方文件對 Advanced Checklist 適用方案的描述不完全一致。</li>
+        <li>未登入實際產品，未驗證手機版路徑。</li>
+      </ul>
+    </section>
+
+    <section id="asana" class="brief" aria-labelledby="asana-title">
+      <h2 id="asana-title">Asana｜Subtasks</h2>
+      <h3>1. 產品與功能名稱</h3>
+      <dl>
+        <dt>產品</dt><dd>Asana</dd>
+        <dt>功能</dt><dd>Subtasks</dd>
+        <dt>查閱日期</dt><dd>2026-07-29</dd>
+      </dl>
+      <h3>2. 功能所在頁面</h3>
+      <dl>
+        <dt>頁面</dt><dd>Task details pane</dd>
+        <dt>入口</dt><dd>Subtasks</dd>
+        <dt>平台</dt><dd>官方 Help Center 描述的 task details 介面</dd>
+      </dl>
+      <h3>3. 起點及操作路徑</h3>
+      <ol>
+        <li>開啟父 task。</li>
+        <li>在 task details pane 選擇 <code>Subtasks</code>；也可右鍵選擇 <code>Add subtask</code> 或使用 <code>Tab+S</code>。[A1]</li>
+        <li>建立 subtask；點擊名稱可開啟詳細資料。[A1]</li>
+      </ol>
+      <h3>4. 畫面呈現與可觀察行為</h3>
+      <p>Subtask 嵌在父 task 中，但功能上是獨立 task，具有相同欄位；task 模型包含完成狀態、負責人與截止日。[A1][A2]</p>
+      <p>Subtask 詳細頁顯示父 task 名稱；最多支援 5 層。完成父 task 不會自動完成 subtasks。[A1]</p>
+      <h3>5. 網址／截圖</h3>
+      <ul>
+        <li>[A1] <a href="https://help.asana.com/s/article/subtasks?language=en_US" target="_blank" rel="noopener noreferrer">Asana Subtasks</a></li>
+        <li>[A2] <a href="https://developers.asana.com/reference/tasks" target="_blank" rel="noopener noreferrer">Asana Task schema</a></li>
+      </ul>
+      <h3>6. 來源資訊</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>編號</th><th>類型</th><th>名稱</th><th>查閱日期</th></tr></thead>
+          <tbody>
+            <tr><td>A1</td><td>官方文件</td><td>Asana Subtasks</td><td>2026-07-29</td></tr>
+            <tr><td>A2</td><td>官方開發文件</td><td>Asana Task schema</td><td>2026-07-29</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>7. 無法確認的限制</h3>
+      <ul>
+        <li>未登入實際產品，未驗證目前付費方案差異。</li>
+        <li>未驗證手機版建立入口與畫面配置。</li>
+      </ul>
+    </section>
+
+    <section id="linear" class="brief" aria-labelledby="linear-title">
+      <h2 id="linear-title">Linear｜Parent and sub-issues</h2>
+      <h3>1. 產品與功能名稱</h3>
+      <dl>
+        <dt>產品</dt><dd>Linear</dd>
+        <dt>功能</dt><dd>Parent and sub-issues</dd>
+        <dt>查閱日期</dt><dd>2026-07-29</dd>
+      </dl>
+      <h3>2. 功能所在頁面</h3>
+      <dl>
+        <dt>頁面</dt><dd>Parent issue details</dd>
+        <dt>入口</dt><dd>Description 下方的 <code>+ Add sub-issues</code></dd>
+        <dt>平台</dt><dd>官方 Web 文件；未逐平台驗證</dd>
+      </dl>
+      <h3>3. 起點及操作路徑</h3>
+      <ol>
+        <li>開啟 parent issue。</li>
+        <li>點擊 description 下方的 <code>+ Add sub-issues</code>。[L1]</li>
+        <li>建立單筆 sub-issue，或貼上多筆 issue title 批次建立。[L1]</li>
+      </ol>
+      <h3>4. 畫面呈現與可觀察行為</h3>
+      <p>Sub-issue 顯示於 parent issue 下方。建立時繼承 team、priority 與 project；cycle 及 assignee 只在官方列出的特定條件下繼承。[L1]</p>
+      <p>團隊可設定「全部 sub-issues 完成時關閉 parent」或「parent 完成時關閉剩餘 sub-issues」。[L1]</p>
+      <h3>5. 網址／截圖</h3>
+      <ul>
+        <li>[L1] <a href="https://linear.app/docs/parent-and-sub-issues" target="_blank" rel="noopener noreferrer">Parent and sub-issues</a></li>
+        <li>[L2] <a href="https://linear.app/docs/creating-issues" target="_blank" rel="noopener noreferrer">Create issues</a></li>
+      </ul>
+      <h3>6. 來源資訊</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>編號</th><th>類型</th><th>名稱</th><th>查閱日期</th></tr></thead>
+          <tbody>
+            <tr><td>L1</td><td>官方文件</td><td>Parent and sub-issues</td><td>2026-07-29</td></tr>
+            <tr><td>L2</td><td>官方文件</td><td>Create issues</td><td>2026-07-29</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>7. 無法確認的限制</h3>
+      <ul>
+        <li>官方 sub-issue 頁面未直接說明截止日操作。</li>
+        <li>未能從查閱來源確認最大巢狀層數。</li>
+        <li>未登入產品驗證實際畫面與手機版路徑。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>[O1] 使用者於本次對話提供的我方產品現況，記錄日期 2026-07-29。</p>
+  </footer>
+</body>
+</html>
