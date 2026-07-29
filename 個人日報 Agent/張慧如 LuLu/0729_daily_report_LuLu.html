@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>每日進度報告 - 2026-07-29</title>
+<style>
+  body {
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 20px;
+    line-height: 1.8;
+    color: #222;
+  }
+  h1 {
+    font-size: 1.5em;
+    border-bottom: 2px solid #333;
+    padding-bottom: 8px;
+  }
+  h2 {
+    font-size: 1.15em;
+    margin-top: 32px;
+    color: #333;
+  }
+  h3 {
+    font-size: 1em;
+    margin: 16px 0 4px;
+    color: #444;
+  }
+  .summary {
+    background: #f5f5f5;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+  ul {
+    padding-left: 1.4em;
+  }
+  li {
+    margin-bottom: 6px;
+  }
+  code {
+    background: #eee;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.9em;
+  }
+  .todo {
+    color: #b45309;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h1>每日進度報告 - 2026-07-29</h1>
+<p class="summary">今天完成「每日進度報告 Agent」（DailyReport 專案）第一版建置：確定 Slack 改用瀏覽器讀取（不建 App）、Notion 進度追蹤改用「子項目＋目前進度」而不新增欄位；另外也安裝了 book-to-skill 這個新 skill。</p>
+
+<h2>今天完成</h2>
+<h3>每日進度報告 Agent（DailyReport 專案）</h3>
+<ul>
+  <li>確認現有 <code>daily-report/</code> 雛型內容，依 LuLu 確認的方向規劃出完整建置計畫。</li>
+  <li>確認 Claude Code 與 Codex 對話紀錄的實際存放路徑與格式，可依日期篩選當天內容。</li>
+  <li>寫好 <code>collect_notion.py</code>、<code>collect_sessions.py</code>、<code>build_report.py</code> 收集腳本，並實測跑通，成功產出當天的原始資料彙整檔。</li>
+  <li>原本規劃 Slack 走 Bot Token + App 安裝，LuLu 詢問「可以不建立 Slack App 嗎」後，改成用瀏覽器讀取她已登入的 Slack 網頁版，並實測確認可行（讀得到頻道訊息、發送者、時間）。</li>
+  <li>討論 Notion「10 任務 10 行動」資料庫要怎麼追蹤進度：原本建議加一個「狀態」欄位，LuLu 選擇不改資料庫結構，改成之後用既有的「子項目」欄位把大專案拆成小步驟，讓既有的「目前進度」百分比欄位自動生效。</li>
+  <li>把 <code>collect_notion.py</code> 加上「今天靠子項目推進的大專案」偵測邏輯（讀「目前進度」rollup 百分比），並同步更新 <code>AGENTS.md</code> 跟專案記憶。</li>
+  <li>寫好 <code>AGENTS.md</code> 整理規則、<code>template.html</code> 固定樣式、<code>/daily-report</code> 斜線指令，並用真實資料完整跑過兩次流程。</li>
+</ul>
+<h3>Skill 安裝與盤點</h3>
+<ul>
+  <li>安裝 book-to-skill skill 並完成 git commit（<code>f97f863</code>）。</li>
+  <li>盤點目前 <code>.claude/skills/</code> 資料夾裡安裝的 skill 數量與分類（共 115 個）。</li>
+</ul>
+
+<h2>問題與卡點</h2>
+<ul>
+  <li>Slack 追蹤的兩個頻道，連續兩次檢查都沒有當天新訊息，其中一個內容大多是請假／出勤通知，不一定能反映實際工作進度。<span class="todo">待確認：這個頻道是否真的要繼續追蹤，或換成別的頻道。</span></li>
+  <li>瀏覽器讀取 Slack 的方式無法排程自動化（需要互動式開瀏覽器），比原本設想的 API 方式少了「以後可以全自動」的彈性。</li>
+  <li>Notion 的「子項目推進進度」要等 LuLu 之後真的開始把任務拆成子項目才會有內容，目前還沒有實際案例可以驗證這段邏輯抓得準不準。</li>
+</ul>
+
+<h2>明天計畫</h2>
+<ul>
+  <li>開始正式每天用 <code>/daily-report</code> 產生報告，觀察實際使用起來的資料品質（尤其 Slack 段落）。</li>
+  <li>視需要調整追蹤的 Slack 頻道清單。</li>
+  <li>找一個大專案任務試著拆「子項目」，驗證「目前進度」百分比跟「大專案推進」偵測邏輯是否如預期運作。</li>
+</ul>
+
+<h2>觀察與建議</h2>
+<ul>
+  <li>今天工具設計中途轉了兩次彎（Slack 從 Bot API 改瀏覽器讀取、Notion 從加欄位改用子項目），都是在跟 LuLu 確認後才改，過程正常，但也提醒之後遇到類似「要不要動既有系統結構」的決定時，可以先問清楚使用習慣再決定要不要加新欄位，能少走一輪。</li>
+  <li>兩個 Slack 頻道目前看起來訊息頻率不算高，用幾天實際觀察後，如果常態性沒有內容，可以考慮要不要換成訊息量更大、更貼近工作討論的頻道。</li>
+  <li>今天實質完成的工作大部分是「打造這個日報系統本身」，這種 meta 性質的工作在 AI 對話紀錄裡佔比很高；之後如果同一天內同時有其他實質工作與系統開發討論混在一起，整理時要留意別讓開發過程的瑣碎細節蓋過真正的工作成果。</li>
+</ul>
+
+</body>
+</html>
